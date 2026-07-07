@@ -1,0 +1,45 @@
+<app-nav-bar />
+
+<div class="disciplinas-page">
+  <h1>Disciplinas</h1>
+
+  <form class="cadastro" [formGroup]="form" (ngSubmit)="cadastrar()">
+    <input type="text" formControlName="nome" placeholder="Nome da disciplina" />
+    <button type="submit" [disabled]="form.invalid">Adicionar</button>
+  </form>
+
+  @if (errorMessage()) {
+    <p class="error">{{ errorMessage() }}</p>
+  }
+
+  <table>
+    <thead>
+      <tr>
+        <th>Nome</th>
+        <th>Créditos</th>
+        <th>Faltas</th>
+        <th></th>
+      </tr>
+    </thead>
+    <tbody>
+      @for (disciplina of disciplinas(); track disciplina.id) {
+        <tr>
+          <td>{{ disciplina.nome }}</td>
+          <td>{{ disciplina.creditos }}</td>
+          <td class="faltas">
+            <button type="button" (click)="ajustarFaltas(disciplina, -1)" [disabled]="disciplina.faltas === 0">−</button>
+            <span>{{ disciplina.faltas }}</span>
+            <button type="button" (click)="ajustarFaltas(disciplina, 1)">+</button>
+          </td>
+          <td>
+            <button type="button" class="remover" (click)="remover(disciplina)">Remover</button>
+          </td>
+        </tr>
+      } @empty {
+        <tr>
+          <td colspan="4">Nenhuma disciplina cadastrada ainda.</td>
+        </tr>
+      }
+    </tbody>
+  </table>
+</div>
