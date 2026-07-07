@@ -1,0 +1,44 @@
+.nav-bar {
+  display: flex;
+  align-items: center;
+  gap: 1.5rem;
+  padding: 0.9rem 1.5rem;
+  border-bottom: 1px solid var(--color-border);
+  background: var(--color-surface);
+
+  .brand {
+    font-family: var(--font-heading);
+    color: var(--color-primary);
+    font-size: 1.25rem;
+    letter-spacing: 0.02em;
+  }
+
+  .links {
+    display: flex;
+    gap: 1rem;
+    flex: 1;
+
+    a {
+      color: var(--color-text-muted);
+      text-decoration: none;
+      font-weight: 600;
+      padding: 0.3rem 0;
+      border-bottom: 2px solid transparent;
+
+      &.active {
+        color: var(--color-primary);
+        border-bottom-color: var(--color-primary);
+      }
+    }
+  }
+
+  button {
+    padding: 0.4rem 0.9rem;
+    border: 1px solid var(--color-primary);
+    border-radius: 8px;
+    background: transparent;
+    color: var(--color-primary);
+    cursor: pointer;
+    font-weight: 600;
+  }
+}

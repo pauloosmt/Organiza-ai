@@ -1,0 +1,11 @@
+<nav class="nav-bar">
+  <span class="brand">Organiza-ai</span>
+
+  <div class="links">
+    <a routerLink="/" routerLinkActive="active" [routerLinkActiveOptions]="{ exact: true }">Início</a>
+    <a routerLink="/disciplinas" routerLinkActive="active">Disciplinas</a>
+    <a routerLink="/grade" routerLinkActive="active">Grade</a>
+  </div>
+
+  <button type="button" (click)="logout()">Sair</button>
+</nav>
