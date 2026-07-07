@@ -1,4 +1,4 @@
-import { HttpClient } from '@angular/common/http';
+import { HttpClient, HttpParams } from '@angular/common/http';
 import { Injectable, inject } from '@angular/core';
 import { Observable } from 'rxjs';
 import { environment } from '../../../environments/environment';
@@ -9,8 +9,9 @@ export class GradeService {
   private readonly http = inject(HttpClient);
   private readonly baseUrl = `${environment.apiUrl}/grade/blocos`;
 
-  list(): Observable<GradeBloco[]> {
-    return this.http.get<GradeBloco[]>(this.baseUrl);
+  list(periodoId: string): Observable<GradeBloco[]> {
+    const params = new HttpParams().set('periodoId', periodoId);
+    return this.http.get<GradeBloco[]>(this.baseUrl, { params });
   }
 
   create(payload: CreateOuUpdateGradeBlocoPayload): Observable<GradeBloco> {

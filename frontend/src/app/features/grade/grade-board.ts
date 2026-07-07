@@ -1,4 +1,5 @@
-import { Component, ElementRef, HostListener, OnInit, ViewChild, computed, inject, signal } from '@angular/core';
+import { Component, ElementRef, HostListener, OnInit, ViewChild, computed, effect, inject, signal } from '@angular/core';
+import { PeriodoContextService } from '../../core/periodo/periodo-context.service';
 import { NavBar } from '../../shared/nav-bar/nav-bar';
 import { Disciplina } from '../disciplinas/disciplina.model';
 import { DisciplinasService } from '../disciplinas/disciplinas.service';
@@ -32,6 +33,7 @@ interface PopupState {
 export class GradeBoard implements OnInit {
   private readonly gradeService = inject(GradeService);
   private readonly disciplinasService = inject(DisciplinasService);
+  readonly periodoContext = inject(PeriodoContextService);
 
   @ViewChild('board') boardRef?: ElementRef<HTMLElement>;
 
@@ -88,13 +90,25 @@ export class GradeBoard implements OnInit {
     return this.disciplinas().filter((d) => d.nome.toLowerCase().includes(termo));
   });
 
-  ngOnInit(): void {
-    this.carregar();
+  constructor() {
+    effect(() => {
+      const periodo = this.periodoContext.periodoAtual();
+      if (periodo) {
+        this.carregar(periodo.id);
+      } else {
+        this.blocos.set([]);
+        this.disciplinas.set([]);
+      }
+    });
   }
 
-  carregar(): void {
-    this.gradeService.list().subscribe((blocos) => this.blocos.set(blocos));
-    this.disciplinasService.list().subscribe((disciplinas) => this.disciplinas.set(disciplinas));
+  ngOnInit(): void {
+    this.periodoContext.carregar();
+  }
+
+  carregar(periodoId: string): void {
+    this.gradeService.list(periodoId).subscribe((blocos) => this.blocos.set(blocos));
+    this.disciplinasService.list(periodoId).subscribe((disciplinas) => this.disciplinas.set(disciplinas));
   }
 
   onMouseDown(dia: number, hora: number): void {
@@ -162,10 +176,11 @@ export class GradeBoard implements OnInit {
 
   cadastrarECriarBloco(): void {
     const p = this.popup();
-    if (!p || !p.query.trim()) {
+    const periodo = this.periodoContext.periodoAtual();
+    if (!p || !p.query.trim() || !periodo) {
       return;
     }
-    this.disciplinasService.create(p.query.trim()).subscribe({
+    this.disciplinasService.create(p.query.trim(), periodo.id).subscribe({
       next: (disciplina) => {
         this.disciplinas.update((atual) => [...atual, disciplina]);
         this.salvarBloco(disciplina.id);
@@ -190,7 +205,7 @@ export class GradeBoard implements OnInit {
 
     request$.subscribe({
       next: () => {
-        this.carregar();
+        this.recarregarPeriodoAtual();
         this.fecharPopup();
       },
       error: (err) => {
@@ -207,9 +222,16 @@ export class GradeBoard implements OnInit {
       return;
     }
     this.gradeService.remove(p.blocoId).subscribe(() => {
-      this.carregar();
+      this.recarregarPeriodoAtual();
       this.fecharPopup();
     });
+  }
+
+  private recarregarPeriodoAtual(): void {
+    const periodo = this.periodoContext.periodoAtual();
+    if (periodo) {
+      this.carregar(periodo.id);
+    }
   }
 
   async exportarPng(): Promise<void> {
