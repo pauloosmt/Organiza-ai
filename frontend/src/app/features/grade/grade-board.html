@@ -1,0 +1,91 @@
+<app-nav-bar />
+
+<div class="grade-page">
+  <div class="toolbar">
+    <h1>Grade de Horário</h1>
+    <div class="export-buttons">
+      <button type="button" (click)="exportarPng()" [disabled]="exportando()">Exportar PNG</button>
+      <button type="button" (click)="exportarPdf()" [disabled]="exportando()">Exportar PDF</button>
+    </div>
+  </div>
+
+  <p class="dica">Arraste com o mouse sobre um ou mais horários do mesmo dia para alocar uma disciplina.</p>
+
+  <div class="board" #board>
+    <div class="corner cell-header"></div>
+    @for (dia of dias; track dia.value) {
+      <div class="dia-header cell-header" [style.grid-column]="dia.value + 1">{{ dia.label }}</div>
+    }
+
+    @for (hora of horas; track hora) {
+      <div class="hora-label" [style.grid-row]="hora - 6 + 2">{{ hora.toString().padStart(2, '0') }}:00</div>
+    }
+
+    @for (celula of celulasVazias(); track celula.dia + '-' + celula.hora) {
+      <div
+        class="cell"
+        [class.selecting]="isSelecting(celula.dia, celula.hora)"
+        [style.grid-column]="celula.dia + 1"
+        [style.grid-row]="celula.hora - 6 + 2"
+        [attr.data-dia]="celula.dia"
+        [attr.data-hora]="celula.hora"
+        (mousedown)="onMouseDown(celula.dia, celula.hora)"
+        (mouseenter)="onMouseEnter(celula.dia, celula.hora)"
+      ></div>
+    }
+
+    @for (bloco of blocos(); track bloco.id) {
+      <button
+        type="button"
+        class="bloco"
+        [style.grid-column]="bloco.diaSemana + 1"
+        [style.grid-row]="(bloco.horaInicio - 6 + 2) + ' / ' + (bloco.horaFim - 6 + 2)"
+        [attr.data-disciplina]="bloco.disciplinaNome"
+        (click)="onClickBloco(bloco)"
+      >
+        {{ bloco.disciplinaNome }}
+      </button>
+    }
+  </div>
+
+  @if (popup(); as p) {
+    <div class="popup-overlay" (click)="fecharPopup()">
+      <div class="popup" (click)="$event.stopPropagation()">
+        <h2>{{ p.blocoId ? 'Editar horário' : 'Alocar horário' }}</h2>
+        <p class="horario">{{ p.horaInicio.toString().padStart(2, '0') }}:00 – {{ p.horaFim.toString().padStart(2, '0') }}:00</p>
+
+        <input
+          type="text"
+          placeholder="Buscar disciplina..."
+          [value]="p.query"
+          (input)="atualizarQuery($any($event.target).value)"
+        />
+
+        <ul class="sugestoes">
+          @for (disciplina of sugestoes(); track disciplina.id) {
+            <li>
+              <button type="button" (click)="selecionarDisciplina(disciplina)">{{ disciplina.nome }}</button>
+            </li>
+          } @empty {
+            @if (p.query.trim()) {
+              <li>
+                <button type="button" (click)="cadastrarECriarBloco()">Cadastrar "{{ p.query }}"</button>
+              </li>
+            }
+          }
+        </ul>
+
+        @if (errorMessage()) {
+          <p class="error">{{ errorMessage() }}</p>
+        }
+
+        <div class="popup-actions">
+          @if (p.blocoId) {
+            <button type="button" class="remover" (click)="removerBloco()">Remover</button>
+          }
+          <button type="button" class="cancelar" (click)="fecharPopup()">Cancelar</button>
+        </div>
+      </div>
+    </div>
+  }
+</div>
