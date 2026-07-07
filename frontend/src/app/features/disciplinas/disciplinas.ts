@@ -1,5 +1,6 @@
-import { Component, OnInit, inject, signal } from '@angular/core';
+import { Component, OnInit, effect, inject, signal } from '@angular/core';
 import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
+import { PeriodoContextService } from '../../core/periodo/periodo-context.service';
 import { NavBar } from '../../shared/nav-bar/nav-bar';
 import { Disciplina } from './disciplina.model';
 import { DisciplinasService } from './disciplinas.service';
@@ -13,6 +14,7 @@ import { DisciplinasService } from './disciplinas.service';
 export class Disciplinas implements OnInit {
   private readonly disciplinasService = inject(DisciplinasService);
   private readonly fb = inject(FormBuilder);
+  readonly periodoContext = inject(PeriodoContextService);
 
   readonly disciplinas = signal<Disciplina[]>([]);
   readonly errorMessage = signal<string | null>(null);
@@ -21,20 +23,32 @@ export class Disciplinas implements OnInit {
     nome: ['', [Validators.required]]
   });
 
-  ngOnInit(): void {
-    this.carregar();
+  constructor() {
+    effect(() => {
+      const periodo = this.periodoContext.periodoAtual();
+      if (periodo) {
+        this.carregar(periodo.id);
+      } else {
+        this.disciplinas.set([]);
+      }
+    });
   }
 
-  carregar(): void {
-    this.disciplinasService.list().subscribe((disciplinas) => this.disciplinas.set(disciplinas));
+  ngOnInit(): void {
+    this.periodoContext.carregar();
+  }
+
+  carregar(periodoId: string): void {
+    this.disciplinasService.list(periodoId).subscribe((disciplinas) => this.disciplinas.set(disciplinas));
   }
 
   cadastrar(): void {
-    if (this.form.invalid) {
+    const periodo = this.periodoContext.periodoAtual();
+    if (this.form.invalid || !periodo) {
       return;
     }
     const nome = this.form.getRawValue().nome!;
-    this.disciplinasService.create(nome).subscribe({
+    this.disciplinasService.create(nome, periodo.id).subscribe({
       next: (disciplina) => {
         this.disciplinas.update((atual) => [...atual, disciplina]);
         this.form.reset();
