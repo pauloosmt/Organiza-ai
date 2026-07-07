@@ -1,20 +1,15 @@
 import { Component, inject } from '@angular/core';
-import { Router } from '@angular/router';
 import { AuthService } from '../../core/auth/auth.service';
+import { NavBar } from '../../shared/nav-bar/nav-bar';
 
 @Component({
   selector: 'app-home',
-  imports: [],
+  imports: [NavBar],
   templateUrl: './home.html',
   styleUrl: './home.scss'
 })
 export class Home {
   private readonly authService = inject(AuthService);
-  private readonly router = inject(Router);
 
   readonly currentUser = this.authService.currentUser;
-
-  logout(): void {
-    this.authService.logout().subscribe(() => this.router.navigateByUrl('/login'));
-  }
 }
