@@ -1,7 +1,12 @@
 <app-nav-bar />
 
 <div class="disciplinas-page">
-  <h1>Disciplinas</h1>
+  <header class="page-header">
+    <h1>Disciplinas</h1>
+    @if (periodoContext.periodoAtual(); as periodo) {
+      <span class="badge">{{ periodo.nome }}</span>
+    }
+  </header>
 
   <form class="cadastro" [formGroup]="form" (ngSubmit)="cadastrar()">
     <input type="text" formControlName="nome" placeholder="Nome da disciplina" />
@@ -12,34 +17,35 @@
     <p class="error">{{ errorMessage() }}</p>
   }
 
-  <table>
-    <thead>
-      <tr>
-        <th>Nome</th>
-        <th>Créditos</th>
-        <th>Faltas</th>
-        <th></th>
-      </tr>
-    </thead>
-    <tbody>
+  @if (disciplinas().length > 0) {
+    <ul class="lista">
+      <li class="cabecalho">
+        <span class="col-nome">Nome</span>
+        <span class="col-creditos">Créditos</span>
+        <span class="col-faltas">Faltas</span>
+        <span class="col-acoes"></span>
+      </li>
       @for (disciplina of disciplinas(); track disciplina.id) {
-        <tr>
-          <td>{{ disciplina.nome }}</td>
-          <td>{{ disciplina.creditos }}</td>
-          <td class="faltas">
-            <button type="button" (click)="ajustarFaltas(disciplina, -1)" [disabled]="disciplina.faltas === 0">−</button>
-            <span>{{ disciplina.faltas }}</span>
-            <button type="button" (click)="ajustarFaltas(disciplina, 1)">+</button>
-          </td>
-          <td>
+        <li class="linha">
+          <span class="col-nome">{{ disciplina.nome }}</span>
+          <span class="col-creditos">
+            <span class="pill">{{ disciplina.creditos }}</span>
+          </span>
+          <span class="col-faltas">
+            <button type="button" class="stepper" (click)="ajustarFaltas(disciplina, -1)" [disabled]="disciplina.faltas === 0" aria-label="Diminuir falta">−</button>
+            <span class="valor">{{ disciplina.faltas }}</span>
+            <button type="button" class="stepper" (click)="ajustarFaltas(disciplina, 1)" aria-label="Adicionar falta">+</button>
+          </span>
+          <span class="col-acoes">
             <button type="button" class="remover" (click)="remover(disciplina)">Remover</button>
-          </td>
-        </tr>
-      } @empty {
-        <tr>
-          <td colspan="4">Nenhuma disciplina cadastrada ainda.</td>
-        </tr>
+          </span>
+        </li>
       }
-    </tbody>
-  </table>
+    </ul>
+  } @else {
+    <div class="empty-state">
+      <p>Nenhuma disciplina cadastrada ainda.</p>
+      <p class="hint">Adicione a primeira disciplina do período usando o campo acima.</p>
+    </div>
+  }
 </div>
