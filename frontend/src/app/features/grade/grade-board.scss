@@ -1,7 +1,7 @@
 .grade-page {
   max-width: 1000px;
   margin: 0 auto;
-  padding: 2rem 1rem;
+  padding: 2.5rem 1.5rem 3rem;
 
   .toolbar {
     display: flex;
@@ -9,10 +9,30 @@
     align-items: center;
     flex-wrap: wrap;
     gap: 0.75rem;
+    margin-bottom: 0.4rem;
+  }
+
+  .page-header {
+    display: flex;
+    align-items: baseline;
+    gap: 0.75rem;
+    flex-wrap: wrap;
 
     h1 {
       color: var(--color-primary);
       margin: 0;
+      font-size: 1.9rem;
+    }
+
+    .badge {
+      font-family: var(--font-body);
+      font-weight: 700;
+      font-size: 0.75rem;
+      letter-spacing: 0.06em;
+      padding: 0.25rem 0.65rem;
+      border-radius: 999px;
+      background: var(--color-surface-sunken);
+      color: var(--color-text-muted);
     }
   }
 
@@ -23,11 +43,12 @@
     button {
       padding: 0.5rem 1rem;
       border: 1px solid var(--color-primary);
-      border-radius: 8px;
+      border-radius: var(--radius-sm);
       background: transparent;
       color: var(--color-primary);
       cursor: pointer;
       font-weight: 600;
+      font-size: 0.88rem;
 
       &:disabled {
         opacity: 0.5;
@@ -38,7 +59,8 @@
 
   .dica {
     color: var(--color-text-muted);
-    font-size: 0.875rem;
+    font-size: 0.85rem;
+    margin: 0 0 1.25rem;
   }
 }
 
@@ -49,12 +71,13 @@
   gap: 2px;
   background: var(--color-border);
   border: 1px solid var(--color-border);
-  border-radius: 8px;
+  border-radius: var(--radius-md);
+  box-shadow: var(--shadow-sm);
   overflow: hidden;
   user-select: none;
 
   .cell-header {
-    background: var(--color-surface);
+    background: var(--color-surface-sunken);
     display: flex;
     align-items: center;
     justify-content: center;
@@ -71,24 +94,26 @@
 
   .hora-label {
     grid-column: 1;
-    background: var(--color-surface);
+    background: var(--color-surface-sunken);
     display: flex;
     align-items: center;
     justify-content: center;
     font-size: 0.7rem;
     color: var(--color-text-muted);
+    font-variant-numeric: tabular-nums;
   }
 
   .cell {
-    background: var(--color-background);
+    background: var(--color-surface);
     cursor: crosshair;
+    transition: background 0.1s ease;
 
     &.selecting {
-      background: color-mix(in srgb, var(--color-primary) 25%, var(--color-background));
+      background: color-mix(in srgb, var(--color-primary) 25%, var(--color-surface));
     }
 
     &:hover {
-      background: color-mix(in srgb, var(--color-primary) 12%, var(--color-background));
+      background: color-mix(in srgb, var(--color-primary) 12%, var(--color-surface));
     }
   }
 
@@ -96,20 +121,26 @@
     background: var(--color-primary);
     color: var(--color-on-primary);
     border: none;
-    border-radius: 4px;
+    border-radius: 5px;
     font-size: 0.8rem;
     font-weight: 600;
     padding: 0.25rem;
     cursor: pointer;
     overflow: hidden;
     text-overflow: ellipsis;
+    transition: background 0.15s ease;
+
+    &:hover {
+      background: var(--color-primary-hover);
+    }
   }
 }
 
 .popup-overlay {
   position: fixed;
   inset: 0;
-  background: rgba(0, 0, 0, 0.4);
+  background: rgba(15, 8, 6, 0.45);
+  backdrop-filter: blur(1px);
   display: flex;
   align-items: center;
   justify-content: center;
@@ -117,8 +148,9 @@
 }
 
 .popup {
-  background: var(--color-background);
-  border-radius: 12px;
+  background: var(--color-surface);
+  border-radius: var(--radius-md);
+  box-shadow: var(--shadow-md);
   padding: 1.5rem;
   width: 100%;
   max-width: 340px;
@@ -139,12 +171,17 @@
   }
 
   input {
-    padding: 0.5rem 0.7rem;
-    border-radius: 8px;
+    padding: 0.55rem 0.75rem;
+    border-radius: var(--radius-sm);
     border: 1px solid var(--color-border);
     background: var(--color-background);
     color: var(--color-text);
     font-size: 1rem;
+
+    &:focus-visible {
+      outline: 2px solid var(--color-primary);
+      outline-offset: 1px;
+    }
   }
 
   .sugestoes {
@@ -153,20 +190,22 @@
     padding: 0;
     max-height: 180px;
     overflow-y: auto;
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
 
     li button {
       width: 100%;
       text-align: left;
       padding: 0.5rem 0.6rem;
       border: none;
-      background: var(--color-surface);
-      border-radius: 6px;
-      margin-bottom: 4px;
+      background: var(--color-surface-sunken);
+      border-radius: var(--radius-sm);
       cursor: pointer;
       color: var(--color-text);
 
       &:hover {
-        background: color-mix(in srgb, var(--color-primary) 15%, var(--color-surface));
+        background: color-mix(in srgb, var(--color-primary) 15%, var(--color-surface-sunken));
       }
     }
   }
@@ -187,12 +226,13 @@
       background: transparent;
       color: var(--color-danger);
       cursor: pointer;
+      font-weight: 600;
     }
 
     .cancelar {
       border: 1px solid var(--color-border);
       background: transparent;
-      border-radius: 8px;
+      border-radius: var(--radius-sm);
       padding: 0.4rem 0.9rem;
       cursor: pointer;
       margin-left: auto;

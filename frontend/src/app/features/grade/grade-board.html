@@ -2,7 +2,12 @@
 
 <div class="grade-page">
   <div class="toolbar">
-    <h1>Grade de Horário</h1>
+    <div class="page-header">
+      <h1>Grade de Horário</h1>
+      @if (periodoContext.periodoAtual(); as periodo) {
+        <span class="badge">{{ periodo.nome }}</span>
+      }
+    </div>
     <div class="export-buttons">
       <button type="button" (click)="exportarPng()" [disabled]="exportando()">Exportar PNG</button>
       <button type="button" (click)="exportarPdf()" [disabled]="exportando()">Exportar PDF</button>
