@@ -5,6 +5,7 @@ import com.organizaai.exceptions.entity.EmailAlreadyExistsException;
 import com.organizaai.exceptions.entity.FaltasNegativasException;
 import com.organizaai.exceptions.entity.GradeBlocoNotFoundException;
 import com.organizaai.exceptions.entity.HorarioSobrepostoException;
+import com.organizaai.exceptions.entity.PeriodoJaExisteException;
 import com.organizaai.exceptions.login.InvalidCredentialsException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -34,8 +35,8 @@ public class GlobalExceptionHandler {
         return buildResponse(HttpStatus.NOT_FOUND, ex.getMessage());
     }
 
-    @ExceptionHandler(HorarioSobrepostoException.class)
-    public ResponseEntity<Map<String, Object>> handleHorarioSobreposto(HorarioSobrepostoException ex) {
+    @ExceptionHandler({HorarioSobrepostoException.class, PeriodoJaExisteException.class})
+    public ResponseEntity<Map<String, Object>> handleConflict(RuntimeException ex) {
         return buildResponse(HttpStatus.CONFLICT, ex.getMessage());
     }
 
