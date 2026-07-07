@@ -8,6 +8,16 @@ export const routes: Routes = [
     canActivate: [authGuard]
   },
   {
+    path: 'disciplinas',
+    loadComponent: () => import('./features/disciplinas/disciplinas').then((m) => m.Disciplinas),
+    canActivate: [authGuard]
+  },
+  {
+    path: 'grade',
+    loadComponent: () => import('./features/grade/grade-board').then((m) => m.GradeBoard),
+    canActivate: [authGuard]
+  },
+  {
     path: 'login',
     loadComponent: () => import('./features/auth/login/login').then((m) => m.Login)
   },
