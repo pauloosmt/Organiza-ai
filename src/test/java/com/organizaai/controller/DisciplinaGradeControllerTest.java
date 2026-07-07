@@ -3,6 +3,7 @@ package com.organizaai.controller;
 import com.organizaai.data.dto.request.AjustarFaltasRequest;
 import com.organizaai.data.dto.request.CreateDisciplinaRequest;
 import com.organizaai.data.dto.request.CreateGradeBlocoRequest;
+import com.organizaai.data.dto.request.CreatePeriodoRequest;
 import com.organizaai.data.dto.request.LoginRequest;
 import com.organizaai.data.dto.request.RegisterRequest;
 import jakarta.servlet.http.Cookie;
@@ -38,10 +39,11 @@ class DisciplinaGradeControllerTest {
     @Test
     void createDisciplinaStartsWithZeroCreditosEFaltas() throws Exception {
         Cookie cookie = registerAndLogin("beatriz@example.com");
+        UUID periodoId = criarPeriodo(cookie, 2030, 1);
 
         mockMvc.perform(post("/api/disciplinas").cookie(cookie)
                         .contentType(MediaType.APPLICATION_JSON)
-                        .content(objectMapper.writeValueAsString(new CreateDisciplinaRequest("Cálculo I"))))
+                        .content(objectMapper.writeValueAsString(new CreateDisciplinaRequest("Cálculo I", periodoId))))
                 .andExpect(status().isCreated())
                 .andExpect(jsonPath("$.nome").value("Cálculo I"))
                 .andExpect(jsonPath("$.creditos").value(0))
@@ -51,21 +53,23 @@ class DisciplinaGradeControllerTest {
     @Test
     void alocarBlocosNaGradeAumentaCreditosDaDisciplina() throws Exception {
         Cookie cookie = registerAndLogin("bruno@example.com");
-        UUID disciplinaId = criarDisciplina(cookie, "Física I");
+        UUID periodoId = criarPeriodo(cookie, 2030, 1);
+        UUID disciplinaId = criarDisciplina(cookie, periodoId, "Física I");
 
         criarBloco(cookie, disciplinaId, 1, 19, 21).andExpect(status().isCreated());
-        mockMvc.perform(get("/api/disciplinas").cookie(cookie))
+        mockMvc.perform(get("/api/disciplinas").param("periodoId", periodoId.toString()).cookie(cookie))
                 .andExpect(jsonPath("$[0].creditos").value(2));
 
         criarBloco(cookie, disciplinaId, 3, 19, 21).andExpect(status().isCreated());
-        mockMvc.perform(get("/api/disciplinas").cookie(cookie))
+        mockMvc.perform(get("/api/disciplinas").param("periodoId", periodoId.toString()).cookie(cookie))
                 .andExpect(jsonPath("$[0].creditos").value(4));
     }
 
     @Test
     void alocarBlocoSobrepostoERejeitadoComConflito() throws Exception {
         Cookie cookie = registerAndLogin("carla@example.com");
-        UUID disciplinaId = criarDisciplina(cookie, "Química");
+        UUID periodoId = criarPeriodo(cookie, 2030, 1);
+        UUID disciplinaId = criarDisciplina(cookie, periodoId, "Química");
 
         criarBloco(cookie, disciplinaId, 2, 19, 21).andExpect(status().isCreated());
         criarBloco(cookie, disciplinaId, 2, 20, 22).andExpect(status().isConflict());
@@ -74,7 +78,8 @@ class DisciplinaGradeControllerTest {
     @Test
     void ajustarFaltasNuncaFicaNegativo() throws Exception {
         Cookie cookie = registerAndLogin("duda@example.com");
-        UUID disciplinaId = criarDisciplina(cookie, "Estatística");
+        UUID periodoId = criarPeriodo(cookie, 2030, 1);
+        UUID disciplinaId = criarDisciplina(cookie, periodoId, "Estatística");
 
         mockMvc.perform(patch("/api/disciplinas/" + disciplinaId + "/faltas").cookie(cookie)
                         .contentType(MediaType.APPLICATION_JSON)
@@ -97,26 +102,35 @@ class DisciplinaGradeControllerTest {
     @Test
     void removerDisciplinaRemoveBlocosDaGrade() throws Exception {
         Cookie cookie = registerAndLogin("erika@example.com");
-        UUID disciplinaId = criarDisciplina(cookie, "Programação");
+        UUID periodoId = criarPeriodo(cookie, 2030, 1);
+        UUID disciplinaId = criarDisciplina(cookie, periodoId, "Programação");
         criarBloco(cookie, disciplinaId, 4, 8, 10).andExpect(status().isCreated());
 
         mockMvc.perform(delete("/api/disciplinas/" + disciplinaId).cookie(cookie))
                 .andExpect(status().isNoContent());
 
-        MvcResult result = mockMvc.perform(get("/api/grade/blocos").cookie(cookie))
+        MvcResult result = mockMvc.perform(get("/api/grade/blocos").param("periodoId", periodoId.toString()).cookie(cookie))
                 .andExpect(status().isOk())
                 .andReturn();
         assertEquals("[]", result.getResponse().getContentAsString());
     }
 
-    private UUID criarDisciplina(Cookie cookie, String nome) throws Exception {
-        MvcResult result = mockMvc.perform(post("/api/disciplinas").cookie(cookie)
+    private UUID criarPeriodo(Cookie cookie, int ano, int semestre) throws Exception {
+        MvcResult result = mockMvc.perform(post("/api/periodos").cookie(cookie)
                         .contentType(MediaType.APPLICATION_JSON)
-                        .content(objectMapper.writeValueAsString(new CreateDisciplinaRequest(nome))))
+                        .content(objectMapper.writeValueAsString(new CreatePeriodoRequest(ano, semestre))))
                 .andExpect(status().isCreated())
                 .andReturn();
-        String body = result.getResponse().getContentAsString();
-        return UUID.fromString(body.replaceAll(".*\"id\":\"([0-9a-fA-F-]+)\".*", "$1"));
+        return extrairId(result);
+    }
+
+    private UUID criarDisciplina(Cookie cookie, UUID periodoId, String nome) throws Exception {
+        MvcResult result = mockMvc.perform(post("/api/disciplinas").cookie(cookie)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(new CreateDisciplinaRequest(nome, periodoId))))
+                .andExpect(status().isCreated())
+                .andReturn();
+        return extrairId(result);
     }
 
     private org.springframework.test.web.servlet.ResultActions criarBloco(
@@ -126,6 +140,11 @@ class DisciplinaGradeControllerTest {
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(objectMapper.writeValueAsString(
                         new CreateGradeBlocoRequest(disciplinaId, diaSemana, horaInicio, horaFim))));
+    }
+
+    private UUID extrairId(MvcResult result) throws Exception {
+        String body = result.getResponse().getContentAsString();
+        return UUID.fromString(body.replaceAll(".*\"id\":\"([0-9a-fA-F-]+)\".*", "$1"));
     }
 
     private Cookie registerAndLogin(String email) throws Exception {
