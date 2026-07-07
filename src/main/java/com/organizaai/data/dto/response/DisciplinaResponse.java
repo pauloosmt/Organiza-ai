@@ -7,6 +7,7 @@ import java.util.UUID;
 
 public record DisciplinaResponse(
         UUID id,
+        UUID periodoId,
         String nome,
         int creditos,
         int faltas,
@@ -15,6 +16,7 @@ public record DisciplinaResponse(
     public static DisciplinaResponse fromEntity(Disciplina disciplina, long quantidadeBlocos) {
         return new DisciplinaResponse(
                 disciplina.getId(),
+                disciplina.getPeriodoId(),
                 disciplina.getNome(),
                 (int) (quantidadeBlocos * 2),
                 disciplina.getFaltas(),
