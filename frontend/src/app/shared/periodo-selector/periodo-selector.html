@@ -1,0 +1,26 @@
+<div class="periodo-selector">
+  @if (!criandoNovo()) {
+    <select
+      [ngModel]="context.periodoAtual()?.id ?? ''"
+      (ngModelChange)="onSelecionar($event)"
+    >
+      @for (periodo of context.periodos(); track periodo.id) {
+        <option [value]="periodo.id">{{ periodo.nome }}</option>
+      }
+      <option value="__novo__">+ Novo período</option>
+    </select>
+  } @else {
+    <div class="novo-periodo">
+      <input type="number" [ngModel]="ano()" (ngModelChange)="ano.set($event)" min="2000" max="2100" />
+      <select [ngModel]="semestre()" (ngModelChange)="semestre.set($event)">
+        <option [ngValue]="1">1º semestre</option>
+        <option [ngValue]="2">2º semestre</option>
+      </select>
+      <button type="button" (click)="confirmarNovoPeriodo()">Criar</button>
+      <button type="button" class="cancelar" (click)="cancelarNovoPeriodo()">Cancelar</button>
+    </div>
+    @if (errorMessage()) {
+      <span class="error">{{ errorMessage() }}</span>
+    }
+  }
+</div>
