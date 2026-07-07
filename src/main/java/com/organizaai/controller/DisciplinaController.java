@@ -18,6 +18,7 @@ import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.util.List;
@@ -35,13 +36,16 @@ public class DisciplinaController {
             @AuthenticationPrincipal User user,
             @Valid @RequestBody CreateDisciplinaRequest request
     ) {
-        Disciplina disciplina = disciplinaService.create(user.getId(), request.nome());
+        Disciplina disciplina = disciplinaService.create(user.getId(), request.periodoId(), request.nome());
         return ResponseEntity.status(HttpStatus.CREATED).body(DisciplinaResponse.fromEntity(disciplina, 0));
     }
 
     @GetMapping
-    public List<DisciplinaResponse> list(@AuthenticationPrincipal User user) {
-        return disciplinaService.list(user.getId());
+    public List<DisciplinaResponse> list(
+            @AuthenticationPrincipal User user,
+            @RequestParam UUID periodoId
+    ) {
+        return disciplinaService.list(user.getId(), periodoId);
     }
 
     @DeleteMapping("/{id}")

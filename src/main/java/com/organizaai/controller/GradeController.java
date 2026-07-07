@@ -18,6 +18,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.util.List;
@@ -31,8 +32,11 @@ public class GradeController {
     private final GradeService gradeService;
 
     @GetMapping
-    public List<GradeBlocoResponse> list(@AuthenticationPrincipal User user) {
-        return gradeService.list(user.getId());
+    public List<GradeBlocoResponse> list(
+            @AuthenticationPrincipal User user,
+            @RequestParam UUID periodoId
+    ) {
+        return gradeService.list(user.getId(), periodoId);
     }
 
     @PostMapping
