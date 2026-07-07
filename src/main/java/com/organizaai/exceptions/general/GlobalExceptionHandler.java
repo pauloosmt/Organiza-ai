@@ -1,6 +1,10 @@
 package com.organizaai.exceptions.general;
 
+import com.organizaai.exceptions.entity.DisciplinaNotFoundException;
 import com.organizaai.exceptions.entity.EmailAlreadyExistsException;
+import com.organizaai.exceptions.entity.FaltasNegativasException;
+import com.organizaai.exceptions.entity.GradeBlocoNotFoundException;
+import com.organizaai.exceptions.entity.HorarioSobrepostoException;
 import com.organizaai.exceptions.login.InvalidCredentialsException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -23,6 +27,26 @@ public class GlobalExceptionHandler {
     @ExceptionHandler(InvalidCredentialsException.class)
     public ResponseEntity<Map<String, Object>> handleInvalidCredentials(InvalidCredentialsException ex) {
         return buildResponse(HttpStatus.UNAUTHORIZED, ex.getMessage());
+    }
+
+    @ExceptionHandler({DisciplinaNotFoundException.class, GradeBlocoNotFoundException.class})
+    public ResponseEntity<Map<String, Object>> handleNotFound(RuntimeException ex) {
+        return buildResponse(HttpStatus.NOT_FOUND, ex.getMessage());
+    }
+
+    @ExceptionHandler(HorarioSobrepostoException.class)
+    public ResponseEntity<Map<String, Object>> handleHorarioSobreposto(HorarioSobrepostoException ex) {
+        return buildResponse(HttpStatus.CONFLICT, ex.getMessage());
+    }
+
+    @ExceptionHandler(FaltasNegativasException.class)
+    public ResponseEntity<Map<String, Object>> handleFaltasNegativas(FaltasNegativasException ex) {
+        return buildResponse(HttpStatus.UNPROCESSABLE_CONTENT, ex.getMessage());
+    }
+
+    @ExceptionHandler(IllegalArgumentException.class)
+    public ResponseEntity<Map<String, Object>> handleIllegalArgument(IllegalArgumentException ex) {
+        return buildResponse(HttpStatus.BAD_REQUEST, ex.getMessage());
     }
 
     @ExceptionHandler(MethodArgumentNotValidException.class)
