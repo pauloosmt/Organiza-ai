@@ -1,23 +1,26 @@
-<div class="auth-page">
-  <form class="auth-card" [formGroup]="form" (ngSubmit)="submit()">
-    <h1>Entrar</h1>
+<app-auth-layout>
+  <p class="eyebrow">Bem-vindo de volta</p>
+  <h1>Entrar</h1>
 
-    <label for="email">E-mail</label>
-    <input id="email" type="email" formControlName="email" autocomplete="email" />
+  <form [formGroup]="form" (ngSubmit)="submit()">
+    <div class="field">
+      <label for="email">E-mail</label>
+      <input id="email" type="email" formControlName="email" autocomplete="email" placeholder="voce@faculdade.edu.br" />
+    </div>
 
-    <label for="password">Senha</label>
-    <input id="password" type="password" formControlName="password" autocomplete="current-password" />
+    <div class="field">
+      <label for="password">Senha</label>
+      <input id="password" type="password" formControlName="password" autocomplete="current-password" placeholder="••••••••" />
+    </div>
 
     @if (errorMessage()) {
       <p class="error">{{ errorMessage() }}</p>
     }
 
-    <button type="submit" [disabled]="form.invalid || submitting()">
+    <button type="submit" class="submit" [disabled]="form.invalid || submitting()">
       {{ submitting() ? 'Entrando...' : 'Entrar' }}
     </button>
-
-    <p class="switch">
-      Não tem conta? <a routerLink="/register">Cadastre-se</a>
-    </p>
   </form>
-</div>
+
+  <p class="switch">Não tem conta? <a routerLink="/register">Cadastre-se</a></p>
+</app-auth-layout>
