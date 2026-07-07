@@ -14,12 +14,12 @@ import java.time.Instant;
 import java.util.UUID;
 
 @Entity
-@Table(name = "disciplinas")
+@Table(name = "periodos")
 @Getter
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
-public class Disciplina {
+public class Periodo {
 
     @Id
     @GeneratedValue
@@ -28,29 +28,15 @@ public class Disciplina {
     @Column(name = "user_id", nullable = false)
     private UUID userId;
 
-    /**
-     * Nullable a nível de banco de propósito: o {@code ddl-auto=update} não
-     * consegue adicionar uma coluna NOT NULL numa tabela já populada. O
-     * {@code PeriodoMigrationRunner} garante que, na prática, nunca fica
-     * nula; toda criação nova já exige o valor via DTO.
-     */
-    @Column(name = "periodo_id")
-    private UUID periodoId;
-
-    @Column(nullable = false)
+    @Column(nullable = false, length = 7)
     private String nome;
-
-    @Column(nullable = false)
-    private int faltas;
 
     @Column(name = "created_at", nullable = false, updatable = false)
     private Instant createdAt;
 
-    public Disciplina(UUID userId, UUID periodoId, String nome) {
+    public Periodo(UUID userId, String nome) {
         this.userId = userId;
-        this.periodoId = periodoId;
         this.nome = nome;
-        this.faltas = 0;
         this.createdAt = Instant.now();
     }
 }
