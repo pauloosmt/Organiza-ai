@@ -23,12 +23,12 @@ public class DisciplinaService {
     private final DisciplinaRepository disciplinaRepository;
     private final GradeBlocoRepository gradeBlocoRepository;
 
-    public Disciplina create(UUID userId, String nome) {
-        return disciplinaRepository.save(new Disciplina(userId, nome));
+    public Disciplina create(UUID userId, UUID periodoId, String nome) {
+        return disciplinaRepository.save(new Disciplina(userId, periodoId, nome));
     }
 
-    public List<DisciplinaResponse> list(UUID userId) {
-        List<Disciplina> disciplinas = disciplinaRepository.findByUserId(userId);
+    public List<DisciplinaResponse> list(UUID userId, UUID periodoId) {
+        List<Disciplina> disciplinas = disciplinaRepository.findByUserIdAndPeriodoId(userId, periodoId);
         Map<UUID, Long> quantidadeBlocosPorDisciplina = gradeBlocoRepository.findByUserId(userId).stream()
                 .collect(Collectors.groupingBy(GradeBloco::getDisciplinaId, Collectors.counting()));
 

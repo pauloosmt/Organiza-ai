@@ -25,10 +25,12 @@ public class GradeService {
     private final DisciplinaRepository disciplinaRepository;
     private final DisciplinaService disciplinaService;
 
-    public List<GradeBlocoResponse> list(UUID userId) {
-        List<GradeBloco> blocos = gradeBlocoRepository.findByUserId(userId);
-        Map<UUID, String> nomesPorDisciplina = disciplinaRepository.findByUserId(userId).stream()
+    public List<GradeBlocoResponse> list(UUID userId, UUID periodoId) {
+        List<Disciplina> disciplinasDoPeriodo = disciplinaRepository.findByUserIdAndPeriodoId(userId, periodoId);
+        Map<UUID, String> nomesPorDisciplina = disciplinasDoPeriodo.stream()
                 .collect(Collectors.toMap(Disciplina::getId, Disciplina::getNome));
+
+        List<GradeBloco> blocos = gradeBlocoRepository.findByDisciplinaIdIn(nomesPorDisciplina.keySet());
 
         return blocos.stream()
                 .map(b -> GradeBlocoResponse.fromEntity(b, nomesPorDisciplina.get(b.getDisciplinaId())))
@@ -38,7 +40,7 @@ public class GradeService {
     public GradeBloco create(UUID userId, CreateGradeBlocoRequest request) {
         Disciplina disciplina = disciplinaService.getOwned(userId, request.disciplinaId());
         validarIntervalo(request.horaInicio(), request.horaFim());
-        assertSemSobreposicao(userId, request.diaSemana(), request.horaInicio(), request.horaFim(), null);
+        assertSemSobreposicao(userId, disciplina.getPeriodoId(), request.diaSemana(), request.horaInicio(), request.horaFim(), null);
 
         GradeBloco bloco = new GradeBloco(userId, disciplina.getId(), request.diaSemana(), request.horaInicio(), request.horaFim());
         return gradeBlocoRepository.save(bloco);
@@ -48,7 +50,7 @@ public class GradeService {
         GradeBloco bloco = getOwned(userId, blocoId);
         Disciplina disciplina = disciplinaService.getOwned(userId, request.disciplinaId());
         validarIntervalo(request.horaInicio(), request.horaFim());
-        assertSemSobreposicao(userId, request.diaSemana(), request.horaInicio(), request.horaFim(), blocoId);
+        assertSemSobreposicao(userId, disciplina.getPeriodoId(), request.diaSemana(), request.horaInicio(), request.horaFim(), blocoId);
 
         bloco.setDisciplinaId(disciplina.getId());
         bloco.setDiaSemana(request.diaSemana());
@@ -79,9 +81,14 @@ public class GradeService {
         }
     }
 
-    private void assertSemSobreposicao(UUID userId, int diaSemana, int horaInicio, int horaFim, UUID ignorarBlocoId) {
+    private void assertSemSobreposicao(UUID userId, UUID periodoId, int diaSemana, int horaInicio, int horaFim, UUID ignorarBlocoId) {
+        List<UUID> disciplinaIdsDoPeriodo = disciplinaRepository.findByUserIdAndPeriodoId(userId, periodoId).stream()
+                .map(Disciplina::getId)
+                .toList();
+
         boolean sobrepoe = gradeBlocoRepository.findByUserIdAndDiaSemana(userId, diaSemana).stream()
                 .filter(b -> !b.getId().equals(ignorarBlocoId))
+                .filter(b -> disciplinaIdsDoPeriodo.contains(b.getDisciplinaId()))
                 .anyMatch(b -> horaInicio < b.getHoraFim() && b.getHoraInicio() < horaFim);
 
         if (sobrepoe) {
