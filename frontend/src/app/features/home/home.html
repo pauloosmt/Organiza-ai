@@ -1,7 +1,55 @@
 <app-nav-bar />
 
 <div class="home-page">
-  @if (currentUser(); as user) {
-    <p>Bem-vindo, {{ user.name }}!</p>
+  <header class="page-header">
+    @if (currentUser(); as user) {
+      <h1>Olá, {{ user.name.split(' ')[0] }}</h1>
+    }
+    @if (periodoAtual(); as periodo) {
+      <span class="badge">{{ periodo.nome }}</span>
+    }
+  </header>
+
+  @if (!periodoAtual()) {
+    <div class="empty-state">
+      <p>Você ainda não tem nenhum período criado.</p>
+      <p class="hint">Use o seletor no topo da tela para criar seu primeiro período e começar a organizar suas disciplinas e sua grade.</p>
+    </div>
+  } @else {
+    <section class="agenda">
+      <h2>Hoje</h2>
+      @if (agendaHoje().length > 0) {
+        <ul>
+          @for (bloco of agendaHoje(); track bloco.id) {
+            <li>
+              <span class="horario">{{ bloco.horaInicio.toString().padStart(2, '0') }}:00</span>
+              <span class="disciplina">{{ bloco.disciplinaNome }}</span>
+            </li>
+          }
+        </ul>
+      } @else {
+        <p class="vazio">Nenhuma aula hoje. Aproveite para adiantar os estudos.</p>
+      }
+    </section>
+
+    <section class="resumo">
+      <div class="card">
+        <span class="numero">{{ resumo().totalDisciplinas }}</span>
+        <span class="rotulo">Disciplinas</span>
+      </div>
+      <div class="card">
+        <span class="numero">{{ resumo().totalCreditos }}</span>
+        <span class="rotulo">Créditos</span>
+      </div>
+      <div class="card">
+        <span class="numero">{{ resumo().totalFaltas }}</span>
+        <span class="rotulo">Faltas</span>
+      </div>
+    </section>
+
+    <section class="atalhos">
+      <a routerLink="/disciplinas">Ver disciplinas</a>
+      <a routerLink="/grade">Ver grade</a>
+    </section>
   }
 </div>
