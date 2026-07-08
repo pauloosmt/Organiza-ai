@@ -72,6 +72,13 @@
     background: var(--color-surface);
     box-shadow: var(--shadow-sm);
 
+    .tick {
+      width: 10px;
+      height: 10px;
+      border-radius: 50%;
+      flex-shrink: 0;
+    }
+
     .horario {
       font-weight: 700;
       color: var(--color-primary);
@@ -111,6 +118,17 @@
     color: var(--color-text-muted);
     text-transform: uppercase;
     letter-spacing: 0.05em;
+  }
+
+  .card.alert {
+    .numero {
+      color: var(--color-danger);
+    }
+
+    .disc-nome {
+      font-weight: 600;
+      font-size: 0.85rem;
+    }
   }
 }
 

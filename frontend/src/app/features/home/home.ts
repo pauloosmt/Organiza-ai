@@ -2,7 +2,7 @@ import { Component, OnInit, computed, effect, inject, signal } from '@angular/co
 import { RouterLink } from '@angular/router';
 import { AuthService } from '../../core/auth/auth.service';
 import { PeriodoContextService } from '../../core/periodo/periodo-context.service';
-import { NavBar } from '../../shared/nav-bar/nav-bar';
+import { tagColorVar } from '../../core/theme/tag-color';
 import { Disciplina } from '../disciplinas/disciplina.model';
 import { DisciplinasService } from '../disciplinas/disciplinas.service';
 import { GradeBloco } from '../grade/grade-bloco.model';
@@ -10,7 +10,7 @@ import { GradeService } from '../grade/grade.service';
 
 @Component({
   selector: 'app-home',
-  imports: [NavBar, RouterLink],
+  imports: [RouterLink],
   templateUrl: './home.html',
   styleUrl: './home.scss'
 })
@@ -26,12 +26,17 @@ export class Home implements OnInit {
   private readonly disciplinas = signal<Disciplina[]>([]);
   private readonly blocos = signal<GradeBloco[]>([]);
 
+  readonly tagColorVar = tagColorVar;
+
   readonly resumo = computed(() => {
     const disciplinas = this.disciplinas();
     return {
       totalDisciplinas: disciplinas.length,
       totalCreditos: disciplinas.reduce((soma, d) => soma + d.creditos, 0),
-      totalFaltas: disciplinas.reduce((soma, d) => soma + d.faltas, 0)
+      disciplinaMaisFaltas: disciplinas.reduce<Disciplina | null>(
+        (maior, atual) => (maior === null || atual.faltas > maior.faltas ? atual : maior),
+        null
+      )
     };
   });
 

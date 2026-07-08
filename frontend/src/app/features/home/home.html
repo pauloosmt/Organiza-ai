@@ -1,5 +1,3 @@
-<app-nav-bar />
-
 <div class="home-page">
   <header class="page-header">
     @if (currentUser(); as user) {
@@ -22,6 +20,7 @@
         <ul>
           @for (bloco of agendaHoje(); track bloco.id) {
             <li>
+              <span class="tick" [style.background]="tagColorVar(bloco.corIndice)"></span>
               <span class="horario">{{ bloco.horaInicio.toString().padStart(2, '0') }}:00</span>
               <span class="disciplina">{{ bloco.disciplinaNome }}</span>
             </li>
@@ -41,10 +40,13 @@
         <span class="numero">{{ resumo().totalCreditos }}</span>
         <span class="rotulo">Créditos</span>
       </div>
-      <div class="card">
-        <span class="numero">{{ resumo().totalFaltas }}</span>
-        <span class="rotulo">Faltas</span>
-      </div>
+      @if (resumo().disciplinaMaisFaltas; as maisFaltas) {
+        <div class="card alert">
+          <span class="numero">{{ maisFaltas.faltas }}</span>
+          <span class="disc-nome">{{ maisFaltas.nome }}</span>
+          <span class="rotulo">maior nº de faltas</span>
+        </div>
+      }
     </section>
 
     <section class="atalhos">
