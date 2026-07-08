@@ -1,0 +1,9 @@
+<div class="topbar">
+  <app-periodo-selector />
+
+  <button type="button" class="theme-toggle" (click)="themeService.alternar()">
+    {{ themeService.tema() === 'dark' ? 'Modo claro' : 'Modo escuro' }}
+  </button>
+
+  <button type="button" class="logout" (click)="logout()">Sair</button>
+</div>
