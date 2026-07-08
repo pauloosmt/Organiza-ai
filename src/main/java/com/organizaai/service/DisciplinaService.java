@@ -20,11 +20,14 @@ import java.util.stream.Collectors;
 @RequiredArgsConstructor
 public class DisciplinaService {
 
+    private static final int QUANTIDADE_CORES = 5;
+
     private final DisciplinaRepository disciplinaRepository;
     private final GradeBlocoRepository gradeBlocoRepository;
 
     public Disciplina create(UUID userId, UUID periodoId, String nome) {
-        return disciplinaRepository.save(new Disciplina(userId, periodoId, nome));
+        int corIndice = (int) (disciplinaRepository.countByUserId(userId) % QUANTIDADE_CORES);
+        return disciplinaRepository.save(new Disciplina(userId, periodoId, nome, corIndice));
     }
 
     public List<DisciplinaResponse> list(UUID userId, UUID periodoId) {

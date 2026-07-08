@@ -9,6 +9,7 @@ import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import org.hibernate.annotations.ColumnDefault;
 
 import java.time.Instant;
 import java.util.UUID;
@@ -43,14 +44,19 @@ public class Disciplina {
     @Column(nullable = false)
     private int faltas;
 
+    @Column(name = "cor_indice", nullable = false)
+    @ColumnDefault("0")
+    private int corIndice;
+
     @Column(name = "created_at", nullable = false, updatable = false)
     private Instant createdAt;
 
-    public Disciplina(UUID userId, UUID periodoId, String nome) {
+    public Disciplina(UUID userId, UUID periodoId, String nome, int corIndice) {
         this.userId = userId;
         this.periodoId = periodoId;
         this.nome = nome;
         this.faltas = 0;
+        this.corIndice = corIndice;
         this.createdAt = Instant.now();
     }
 }
