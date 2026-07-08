@@ -51,6 +51,53 @@ class DisciplinaGradeControllerTest {
     }
 
     @Test
+    void disciplinasRecebemCorIndiceCiclicoPorUsuario() throws Exception {
+        Cookie cookie = registerAndLogin("julia@example.com");
+        UUID periodoId = criarPeriodo(cookie, 2030, 1);
+
+        String[] nomes = {"D1", "D2", "D3", "D4", "D5", "D6"};
+        int[] corIndicesEsperados = {0, 1, 2, 3, 4, 0};
+
+        for (int i = 0; i < nomes.length; i++) {
+            mockMvc.perform(post("/api/disciplinas").cookie(cookie)
+                            .contentType(MediaType.APPLICATION_JSON)
+                            .content(objectMapper.writeValueAsString(new CreateDisciplinaRequest(nomes[i], periodoId))))
+                    .andExpect(status().isCreated())
+                    .andExpect(jsonPath("$.corIndice").value(corIndicesEsperados[i]));
+        }
+    }
+
+    @Test
+    void corIndiceNaoEhCompartilhadoEntreUsuariosDiferentes() throws Exception {
+        Cookie cookieA = registerAndLogin("gabriela@example.com");
+        UUID periodoA = criarPeriodo(cookieA, 2030, 1);
+        criarDisciplina(cookieA, periodoA, "Disciplina A1");
+
+        Cookie cookieB = registerAndLogin("henrique@example.com");
+        UUID periodoB = criarPeriodo(cookieB, 2030, 1);
+
+        mockMvc.perform(post("/api/disciplinas").cookie(cookieB)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(new CreateDisciplinaRequest("Disciplina B1", periodoB))))
+                .andExpect(status().isCreated())
+                .andExpect(jsonPath("$.corIndice").value(0));
+    }
+
+    @Test
+    void blocoDaGradeRefleteCorIndiceDaDisciplinaDona() throws Exception {
+        Cookie cookie = registerAndLogin("kevin@example.com");
+        UUID periodoId = criarPeriodo(cookie, 2030, 1);
+        criarDisciplina(cookie, periodoId, "Primeira"); // corIndice 0
+        UUID segundaId = criarDisciplina(cookie, periodoId, "Segunda"); // corIndice 1
+
+        criarBloco(cookie, segundaId, 1, 8, 9).andExpect(status().isCreated());
+
+        mockMvc.perform(get("/api/grade/blocos").param("periodoId", periodoId.toString()).cookie(cookie))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$[0].corIndice").value(1));
+    }
+
+    @Test
     void alocarBlocosNaGradeAumentaCreditosDaDisciplina() throws Exception {
         Cookie cookie = registerAndLogin("bruno@example.com");
         UUID periodoId = criarPeriodo(cookie, 2030, 1);
