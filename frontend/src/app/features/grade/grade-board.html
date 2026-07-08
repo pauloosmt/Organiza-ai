@@ -1,5 +1,3 @@
-<app-nav-bar />
-
 <div class="grade-page">
   <div class="toolbar">
     <div class="page-header">
@@ -45,6 +43,7 @@
         class="bloco"
         [style.grid-column]="bloco.diaSemana + 1"
         [style.grid-row]="(bloco.horaInicio - 6 + 2) + ' / ' + (bloco.horaFim - 6 + 2)"
+        [style.background]="tagColorVar(bloco.corIndice)"
         [attr.data-disciplina]="bloco.disciplinaNome"
         (click)="onClickBloco(bloco)"
       >
@@ -52,6 +51,17 @@
       </button>
     }
   </div>
+
+  @if (legenda().length > 0) {
+    <ul class="legenda">
+      @for (item of legenda(); track item.disciplinaId) {
+        <li>
+          <span class="dot" [style.background]="tagColorVar(item.corIndice)"></span>
+          {{ item.disciplinaNome }}
+        </li>
+      }
+    </ul>
+  }
 
   @if (popup(); as p) {
     <div class="popup-overlay" (click)="fecharPopup()">

@@ -1,6 +1,6 @@
 import { Component, ElementRef, HostListener, OnInit, ViewChild, computed, effect, inject, signal } from '@angular/core';
 import { PeriodoContextService } from '../../core/periodo/periodo-context.service';
-import { NavBar } from '../../shared/nav-bar/nav-bar';
+import { tagColorVar } from '../../core/theme/tag-color';
 import { Disciplina } from '../disciplinas/disciplina.model';
 import { DisciplinasService } from '../disciplinas/disciplinas.service';
 import { GradeBloco } from './grade-bloco.model';
@@ -26,7 +26,7 @@ interface PopupState {
 
 @Component({
   selector: 'app-grade-board',
-  imports: [NavBar],
+  imports: [],
   templateUrl: './grade-board.html',
   styleUrl: './grade-board.scss'
 })
@@ -53,6 +53,20 @@ export class GradeBoard implements OnInit {
   readonly popup = signal<PopupState | null>(null);
   readonly errorMessage = signal<string | null>(null);
   readonly exportando = signal(false);
+
+  readonly tagColorVar = tagColorVar;
+
+  readonly legenda = computed(() => {
+    const vistos = new Set<string>();
+    const itens: { disciplinaId: string; disciplinaNome: string; corIndice: number }[] = [];
+    for (const bloco of this.blocos()) {
+      if (!vistos.has(bloco.disciplinaId)) {
+        vistos.add(bloco.disciplinaId);
+        itens.push({ disciplinaId: bloco.disciplinaId, disciplinaNome: bloco.disciplinaNome, corIndice: bloco.corIndice });
+      }
+    }
+    return itens;
+  });
 
   private dragging = false;
   private dragDia: number | null = null;

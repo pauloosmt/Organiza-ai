@@ -2,6 +2,7 @@ export interface GradeBloco {
   id: string;
   disciplinaId: string;
   disciplinaNome: string;
+  corIndice: number;
   diaSemana: number;
   horaInicio: number;
   horaFim: number;
