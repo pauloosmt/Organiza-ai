@@ -27,13 +27,16 @@ public class GradeService {
 
     public List<GradeBlocoResponse> list(UUID userId, UUID periodoId) {
         List<Disciplina> disciplinasDoPeriodo = disciplinaRepository.findByUserIdAndPeriodoId(userId, periodoId);
-        Map<UUID, String> nomesPorDisciplina = disciplinasDoPeriodo.stream()
-                .collect(Collectors.toMap(Disciplina::getId, Disciplina::getNome));
+        Map<UUID, Disciplina> disciplinasPorId = disciplinasDoPeriodo.stream()
+                .collect(Collectors.toMap(Disciplina::getId, d -> d));
 
-        List<GradeBloco> blocos = gradeBlocoRepository.findByDisciplinaIdIn(nomesPorDisciplina.keySet());
+        List<GradeBloco> blocos = gradeBlocoRepository.findByDisciplinaIdIn(disciplinasPorId.keySet());
 
         return blocos.stream()
-                .map(b -> GradeBlocoResponse.fromEntity(b, nomesPorDisciplina.get(b.getDisciplinaId())))
+                .map(b -> {
+                    Disciplina disciplina = disciplinasPorId.get(b.getDisciplinaId());
+                    return GradeBlocoResponse.fromEntity(b, disciplina.getNome(), disciplina.getCorIndice());
+                })
                 .toList();
     }
 
@@ -64,10 +67,10 @@ public class GradeService {
     }
 
     public GradeBlocoResponse toResponse(GradeBloco bloco) {
-        String nome = disciplinaRepository.findById(bloco.getDisciplinaId())
-                .map(Disciplina::getNome)
-                .orElse(null);
-        return GradeBlocoResponse.fromEntity(bloco, nome);
+        Disciplina disciplina = disciplinaRepository.findById(bloco.getDisciplinaId()).orElse(null);
+        String nome = disciplina != null ? disciplina.getNome() : null;
+        int corIndice = disciplina != null ? disciplina.getCorIndice() : 0;
+        return GradeBlocoResponse.fromEntity(bloco, nome, corIndice);
     }
 
     private GradeBloco getOwned(UUID userId, UUID blocoId) {

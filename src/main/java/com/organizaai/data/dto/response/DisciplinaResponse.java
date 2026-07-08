@@ -11,6 +11,7 @@ public record DisciplinaResponse(
         String nome,
         int creditos,
         int faltas,
+        int corIndice,
         Instant createdAt
 ) {
     public static DisciplinaResponse fromEntity(Disciplina disciplina, long quantidadeBlocos) {
@@ -20,6 +21,7 @@ public record DisciplinaResponse(
                 disciplina.getNome(),
                 (int) (quantidadeBlocos * 2),
                 disciplina.getFaltas(),
+                disciplina.getCorIndice(),
                 disciplina.getCreatedAt()
         );
     }
