@@ -1,5 +1,3 @@
-<app-nav-bar />
-
 <div class="disciplinas-page">
   <header class="page-header">
     <h1>Disciplinas</h1>
@@ -20,6 +18,7 @@
   @if (disciplinas().length > 0) {
     <ul class="lista">
       <li class="cabecalho">
+        <span class="col-avatar"></span>
         <span class="col-nome">Nome</span>
         <span class="col-creditos">Créditos</span>
         <span class="col-faltas">Faltas</span>
@@ -27,6 +26,9 @@
       </li>
       @for (disciplina of disciplinas(); track disciplina.id) {
         <li class="linha">
+          <span class="col-avatar">
+            <span class="avatar" [style.background]="tagColorVar(disciplina.corIndice)">{{ disciplina.nome.charAt(0).toUpperCase() }}</span>
+          </span>
           <span class="col-nome">{{ disciplina.nome }}</span>
           <span class="col-creditos">
             <span class="pill">{{ disciplina.creditos }}</span>

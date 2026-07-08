@@ -4,5 +4,6 @@ export interface Disciplina {
   nome: string;
   creditos: number;
   faltas: number;
+  corIndice: number;
   createdAt: string;
 }

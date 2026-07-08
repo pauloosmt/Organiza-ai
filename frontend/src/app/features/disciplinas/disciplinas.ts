@@ -1,13 +1,13 @@
 import { Component, OnInit, effect, inject, signal } from '@angular/core';
 import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
 import { PeriodoContextService } from '../../core/periodo/periodo-context.service';
-import { NavBar } from '../../shared/nav-bar/nav-bar';
+import { tagColorVar } from '../../core/theme/tag-color';
 import { Disciplina } from './disciplina.model';
 import { DisciplinasService } from './disciplinas.service';
 
 @Component({
   selector: 'app-disciplinas',
-  imports: [ReactiveFormsModule, NavBar],
+  imports: [ReactiveFormsModule],
   templateUrl: './disciplinas.html',
   styleUrl: './disciplinas.scss'
 })
@@ -22,6 +22,8 @@ export class Disciplinas implements OnInit {
   readonly form = this.fb.group({
     nome: ['', [Validators.required]]
   });
+
+  readonly tagColorVar = tagColorVar;
 
   constructor() {
     effect(() => {
