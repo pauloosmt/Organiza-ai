@@ -62,6 +62,15 @@
     font-size: 0.85rem;
     margin: 0 0 1.25rem;
   }
+
+  .dica-scroll {
+    display: none;
+  }
+}
+
+.board-scroll {
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
 }
 
 .board {
@@ -259,5 +268,15 @@
       cursor: pointer;
       margin-left: auto;
     }
+  }
+}
+
+@media (max-width: 720px) {
+  .grade-page .dica-scroll {
+    display: block;
+  }
+
+  .board {
+    grid-template-columns: 70px repeat(6, minmax(92px, 1fr));
   }
 }

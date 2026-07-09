@@ -13,43 +13,46 @@
   </div>
 
   <p class="dica">Arraste com o mouse sobre um ou mais horários do mesmo dia para alocar uma disciplina.</p>
+  <p class="dica dica-scroll">Arraste para o lado para ver a semana inteira.</p>
 
-  <div class="board" #board>
-    <div class="corner cell-header"></div>
-    @for (dia of dias; track dia.value) {
-      <div class="dia-header cell-header" [style.grid-column]="dia.value + 1">{{ dia.label }}</div>
-    }
+  <div class="board-scroll">
+    <div class="board" #board>
+      <div class="corner cell-header"></div>
+      @for (dia of dias; track dia.value) {
+        <div class="dia-header cell-header" [style.grid-column]="dia.value + 1">{{ dia.label }}</div>
+      }
 
-    @for (hora of horas; track hora) {
-      <div class="hora-label" [style.grid-row]="hora - 6 + 2">{{ hora.toString().padStart(2, '0') }}:00</div>
-    }
+      @for (hora of horas; track hora) {
+        <div class="hora-label" [style.grid-row]="hora - 6 + 2">{{ hora.toString().padStart(2, '0') }}:00</div>
+      }
 
-    @for (celula of celulasVazias(); track celula.dia + '-' + celula.hora) {
-      <div
-        class="cell"
-        [class.selecting]="isSelecting(celula.dia, celula.hora)"
-        [style.grid-column]="celula.dia + 1"
-        [style.grid-row]="celula.hora - 6 + 2"
-        [attr.data-dia]="celula.dia"
-        [attr.data-hora]="celula.hora"
-        (mousedown)="onMouseDown(celula.dia, celula.hora)"
-        (mouseenter)="onMouseEnter(celula.dia, celula.hora)"
-      ></div>
-    }
+      @for (celula of celulasVazias(); track celula.dia + '-' + celula.hora) {
+        <div
+          class="cell"
+          [class.selecting]="isSelecting(celula.dia, celula.hora)"
+          [style.grid-column]="celula.dia + 1"
+          [style.grid-row]="celula.hora - 6 + 2"
+          [attr.data-dia]="celula.dia"
+          [attr.data-hora]="celula.hora"
+          (mousedown)="onMouseDown(celula.dia, celula.hora)"
+          (mouseenter)="onMouseEnter(celula.dia, celula.hora)"
+        ></div>
+      }
 
-    @for (bloco of blocos(); track bloco.id) {
-      <button
-        type="button"
-        class="bloco"
-        [style.grid-column]="bloco.diaSemana + 1"
-        [style.grid-row]="(bloco.horaInicio - 6 + 2) + ' / ' + (bloco.horaFim - 6 + 2)"
-        [style.background]="tagColorVar(bloco.corIndice)"
-        [attr.data-disciplina]="bloco.disciplinaNome"
-        (click)="onClickBloco(bloco)"
-      >
-        {{ bloco.disciplinaNome }}
-      </button>
-    }
+      @for (bloco of blocos(); track bloco.id) {
+        <button
+          type="button"
+          class="bloco"
+          [style.grid-column]="bloco.diaSemana + 1"
+          [style.grid-row]="(bloco.horaInicio - 6 + 2) + ' / ' + (bloco.horaFim - 6 + 2)"
+          [style.background]="tagColorVar(bloco.corIndice)"
+          [attr.data-disciplina]="bloco.disciplinaNome"
+          (click)="onClickBloco(bloco)"
+        >
+          {{ bloco.disciplinaNome }}
+        </button>
+      }
+    </div>
   </div>
 
   @if (legenda().length > 0) {
