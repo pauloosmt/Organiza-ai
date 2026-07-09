@@ -1,0 +1,18 @@
+name: Keep backend alive
+
+on:
+  schedule:
+    - cron: '*/10 * * * *'
+  workflow_dispatch:
+
+jobs:
+  ping:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Ping backend health endpoint
+        run: |
+          if [ -z "${{ secrets.API_HEALTH_URL }}" ]; then
+            echo "API_HEALTH_URL secret nao configurado ainda, pulando ping."
+            exit 0
+          fi
+          curl -fsS "${{ secrets.API_HEALTH_URL }}"
