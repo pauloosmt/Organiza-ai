@@ -12,7 +12,7 @@ services:
       - key: COOKIE_SECURE
         value: "true"
       - key: CORS_ALLOWED_ORIGIN
-        value: https://organizaai.vercel.app
+        value: https://organiza-ai-eight.vercel.app
       - key: DB_URL
         sync: false
       - key: DB_USERNAME
