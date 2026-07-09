@@ -5,6 +5,7 @@ import com.organizaai.data.entity.Disciplina;
 import com.organizaai.data.entity.GradeBloco;
 import com.organizaai.exceptions.entity.DisciplinaNotFoundException;
 import com.organizaai.exceptions.entity.FaltasNegativasException;
+import com.organizaai.repository.AvaliacaoRepository;
 import com.organizaai.repository.DisciplinaRepository;
 import com.organizaai.repository.GradeBlocoRepository;
 import lombok.RequiredArgsConstructor;
@@ -24,6 +25,7 @@ public class DisciplinaService {
 
     private final DisciplinaRepository disciplinaRepository;
     private final GradeBlocoRepository gradeBlocoRepository;
+    private final AvaliacaoRepository avaliacaoRepository;
 
     public Disciplina create(UUID userId, UUID periodoId, String nome) {
         int corIndice = (int) (disciplinaRepository.countByUserId(userId) % QUANTIDADE_CORES);
@@ -53,6 +55,7 @@ public class DisciplinaService {
     public void delete(UUID userId, UUID disciplinaId) {
         Disciplina disciplina = getOwned(userId, disciplinaId);
         gradeBlocoRepository.deleteByDisciplinaId(disciplina.getId());
+        avaliacaoRepository.deleteByDisciplinaId(disciplina.getId());
         disciplinaRepository.delete(disciplina);
     }
 

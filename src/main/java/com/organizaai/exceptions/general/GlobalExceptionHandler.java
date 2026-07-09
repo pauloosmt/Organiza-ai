@@ -1,5 +1,6 @@
 package com.organizaai.exceptions.general;
 
+import com.organizaai.exceptions.entity.AvaliacaoNotFoundException;
 import com.organizaai.exceptions.entity.DisciplinaNotFoundException;
 import com.organizaai.exceptions.entity.EmailAlreadyExistsException;
 import com.organizaai.exceptions.entity.FaltasNegativasException;
@@ -30,7 +31,7 @@ public class GlobalExceptionHandler {
         return buildResponse(HttpStatus.UNAUTHORIZED, ex.getMessage());
     }
 
-    @ExceptionHandler({DisciplinaNotFoundException.class, GradeBlocoNotFoundException.class})
+    @ExceptionHandler({DisciplinaNotFoundException.class, GradeBlocoNotFoundException.class, AvaliacaoNotFoundException.class})
     public ResponseEntity<Map<String, Object>> handleNotFound(RuntimeException ex) {
         return buildResponse(HttpStatus.NOT_FOUND, ex.getMessage());
     }
