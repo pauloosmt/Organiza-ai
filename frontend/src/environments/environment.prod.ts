@@ -1,6 +1,8 @@
-// Origem real do backend no Render (o nome "organizaai-api" já estava em uso,
-// a Render atribuiu o sufixo "-6nfk"). Se o serviço for recriado com outro nome,
-// atualize aqui e no connect-src da CSP em src/index.prod.html com o mesmo valor.
+// URL relativa: a Vercel faz proxy de /api/* pro backend no Render (ver
+// frontend/vercel.json), então o navegador só fala com o próprio domínio da
+// Vercel. Isso evita que o cookie de auth seja tratado como "de terceiro" e
+// bloqueado por navegadores mobile (Safari/Chrome Android). Se o domínio do
+// backend no Render mudar, atualizar o destino do rewrite em vercel.json.
 export const environment = {
-  apiUrl: 'https://organizaai-api-6nfk.onrender.com/api'
+  apiUrl: '/api'
 };
