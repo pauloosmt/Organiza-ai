@@ -1,29 +1,56 @@
-import { Component, OnInit, effect, inject, signal } from '@angular/core';
+import { Component, OnInit, computed, effect, inject, signal } from '@angular/core';
 import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
 import { PeriodoContextService } from '../../core/periodo/periodo-context.service';
 import { tagColorVar } from '../../core/theme/tag-color';
+import { formatarDataBr } from '../../core/utils/data-br';
+import { DatePickerBr } from '../../shared/date-picker-br/date-picker-br';
+import { Avaliacao } from '../avaliacoes/avaliacao.model';
+import { AvaliacoesService } from '../avaliacoes/avaliacoes.service';
 import { Disciplina } from './disciplina.model';
 import { DisciplinasService } from './disciplinas.service';
 
 @Component({
   selector: 'app-disciplinas',
-  imports: [ReactiveFormsModule],
+  imports: [ReactiveFormsModule, DatePickerBr],
   templateUrl: './disciplinas.html',
   styleUrl: './disciplinas.scss'
 })
 export class Disciplinas implements OnInit {
   private readonly disciplinasService = inject(DisciplinasService);
+  private readonly avaliacoesService = inject(AvaliacoesService);
   private readonly fb = inject(FormBuilder);
   readonly periodoContext = inject(PeriodoContextService);
 
   readonly disciplinas = signal<Disciplina[]>([]);
+  readonly avaliacoes = signal<Avaliacao[]>([]);
   readonly errorMessage = signal<string | null>(null);
+
+  readonly disciplinaSelecionada = signal<Disciplina | null>(null);
+  readonly avaliacaoErrorMessage = signal<string | null>(null);
+
+  readonly avaliacoesDaDisciplina = computed(() => {
+    const disciplina = this.disciplinaSelecionada();
+    if (!disciplina) {
+      return [];
+    }
+    return this.avaliacoes()
+      .filter((a) => a.disciplinaId === disciplina.id)
+      .sort((a, b) => a.data.localeCompare(b.data));
+  });
 
   readonly form = this.fb.group({
     nome: ['', [Validators.required]]
   });
 
+  readonly avaliacaoForm = this.fb.group({
+    titulo: ['', [Validators.required]],
+    tipo: ['PROVA' as 'PROVA' | 'TRABALHO', [Validators.required]],
+    data: ['', [Validators.required]],
+    pontuacao: [10, [Validators.required, Validators.min(1)]]
+  });
+
   readonly tagColorVar = tagColorVar;
+  readonly formatarDataBr = formatarDataBr;
 
   constructor() {
     effect(() => {
@@ -32,6 +59,7 @@ export class Disciplinas implements OnInit {
         this.carregar(periodo.id);
       } else {
         this.disciplinas.set([]);
+        this.avaliacoes.set([]);
       }
     });
   }
@@ -42,6 +70,7 @@ export class Disciplinas implements OnInit {
 
   carregar(periodoId: string): void {
     this.disciplinasService.list(periodoId).subscribe((disciplinas) => this.disciplinas.set(disciplinas));
+    this.avaliacoesService.list(periodoId).subscribe((avaliacoes) => this.avaliacoes.set(avaliacoes));
   }
 
   cadastrar(): void {
@@ -62,6 +91,7 @@ export class Disciplinas implements OnInit {
   remover(disciplina: Disciplina): void {
     this.disciplinasService.remove(disciplina.id).subscribe(() => {
       this.disciplinas.update((atual) => atual.filter((d) => d.id !== disciplina.id));
+      this.avaliacoes.update((atual) => atual.filter((a) => a.disciplinaId !== disciplina.id));
     });
   }
 
@@ -71,6 +101,62 @@ export class Disciplinas implements OnInit {
         this.disciplinas.update((atual) => atual.map((d) => (d.id === atualizada.id ? atualizada : d)));
       },
       error: () => this.errorMessage.set('Não foi possível ajustar as faltas.')
+    });
+  }
+
+  abrirPainel(disciplina: Disciplina): void {
+    this.disciplinaSelecionada.set(disciplina);
+    this.avaliacaoErrorMessage.set(null);
+    this.avaliacaoForm.reset({ titulo: '', tipo: 'PROVA', data: '', pontuacao: 10 });
+  }
+
+  fecharPainel(): void {
+    this.disciplinaSelecionada.set(null);
+  }
+
+  cadastrarAvaliacao(): void {
+    const disciplina = this.disciplinaSelecionada();
+    if (this.avaliacaoForm.invalid || !disciplina) {
+      return;
+    }
+    const valores = this.avaliacaoForm.getRawValue();
+    this.avaliacoesService.create({
+      disciplinaId: disciplina.id,
+      titulo: valores.titulo!,
+      tipo: valores.tipo!,
+      data: valores.data!,
+      pontuacao: valores.pontuacao!
+    }).subscribe({
+      next: (avaliacao) => {
+        this.avaliacoes.update((atual) => [...atual, avaliacao]);
+        this.avaliacaoForm.reset({ titulo: '', tipo: 'PROVA', data: '', pontuacao: 10 });
+      },
+      error: () => this.avaliacaoErrorMessage.set('Não foi possível cadastrar a avaliação.')
+    });
+  }
+
+  atualizarNota(avaliacao: Avaliacao, notaTexto: string): void {
+    const nota = notaTexto.trim() === '' ? null : Number(notaTexto);
+    if (nota !== null && Number.isNaN(nota)) {
+      return;
+    }
+    this.avaliacoesService.update(avaliacao.id, {
+      titulo: avaliacao.titulo,
+      tipo: avaliacao.tipo,
+      data: avaliacao.data,
+      pontuacao: avaliacao.pontuacao,
+      nota
+    }).subscribe({
+      next: (atualizada) => {
+        this.avaliacoes.update((atual) => atual.map((a) => (a.id === atualizada.id ? atualizada : a)));
+      },
+      error: () => this.avaliacaoErrorMessage.set('Não foi possível salvar a nota.')
+    });
+  }
+
+  removerAvaliacao(avaliacao: Avaliacao): void {
+    this.avaliacoesService.remove(avaliacao.id).subscribe(() => {
+      this.avaliacoes.update((atual) => atual.filter((a) => a.id !== avaliacao.id));
     });
   }
 }

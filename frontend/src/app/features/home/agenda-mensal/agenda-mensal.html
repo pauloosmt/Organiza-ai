@@ -1,0 +1,31 @@
+<div class="agenda-mensal">
+  <div class="cabecalho">
+    <button type="button" (click)="mesAnterior()" aria-label="Mês anterior">‹</button>
+    <span class="nome-mes">{{ nomeMesAtual() }}</span>
+    <button type="button" (click)="proximoMes()" aria-label="Próximo mês">›</button>
+  </div>
+
+  @if (diasComAvaliacao().length > 0) {
+    <ul class="lista-dias">
+      @for (dia of diasComAvaliacao(); track dia.data) {
+        <li>
+          <span class="data">{{ dia.dataFormatada }}</span>
+          <ul class="itens">
+            @for (avaliacao of dia.avaliacoes; track avaliacao.id) {
+              <li class="item" [style.background]="tagColorVar(avaliacao.corIndice)">
+                <span class="tipo">{{ avaliacao.tipo === 'PROVA' ? 'Prova' : 'Trabalho' }}</span>
+                <span class="disciplina">{{ avaliacao.disciplinaNome }}</span>
+                <span class="titulo">{{ avaliacao.titulo }}</span>
+                @if (avaliacao.nota !== null) {
+                  <span class="nota">Nota: {{ avaliacao.nota }}</span>
+                }
+              </li>
+            }
+          </ul>
+        </li>
+      }
+    </ul>
+  } @else {
+    <p class="vazio">Nenhuma prova ou trabalho neste mês.</p>
+  }
+</div>

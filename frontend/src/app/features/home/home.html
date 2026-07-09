@@ -31,6 +31,11 @@
       }
     </section>
 
+    <section class="agenda-do-periodo">
+      <h2>Provas e trabalhos</h2>
+      <app-agenda-mensal [avaliacoes]="avaliacoes()" />
+    </section>
+
     <section class="resumo">
       <div class="card">
         <span class="numero">{{ resumo().totalDisciplinas }}</span>

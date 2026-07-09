@@ -1,0 +1,129 @@
+:host {
+  display: block;
+}
+
+.date-picker-br {
+  position: relative;
+}
+
+.campo {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.5rem;
+  padding: 0.55rem 0.75rem;
+  border-radius: var(--radius-sm);
+  border: 1px solid var(--color-border);
+  background: var(--color-background);
+  color: var(--color-text);
+  font-size: 0.95rem;
+  cursor: pointer;
+  text-align: left;
+
+  &:hover:not(:disabled) {
+    background: var(--color-surface-sunken);
+  }
+
+  &:focus-visible {
+    outline: 2px solid var(--color-primary);
+    outline-offset: 1px;
+  }
+
+  &:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+  }
+
+  .placeholder {
+    color: var(--color-text-muted);
+  }
+}
+
+.dropdown {
+  position: absolute;
+  top: calc(100% + 6px);
+  left: 0;
+  z-index: 20;
+  width: 260px;
+  padding: 0.85rem;
+  border-radius: var(--radius-md);
+  background: var(--color-surface);
+  box-shadow: var(--shadow-md);
+  border: 1px solid var(--color-border);
+}
+
+.cabecalho {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 0.6rem;
+
+  .nome-mes {
+    font-family: var(--font-heading);
+    color: var(--color-primary);
+    font-size: 0.95rem;
+  }
+
+  button {
+    width: 24px;
+    height: 24px;
+    border-radius: 50%;
+    border: 1px solid var(--color-border);
+    background: transparent;
+    color: var(--color-text);
+    cursor: pointer;
+    font-size: 0.9rem;
+    line-height: 1;
+
+    &:hover:not(:disabled) {
+      background: var(--color-surface-sunken);
+    }
+  }
+}
+
+.grid-semana,
+.grid-dias {
+  display: grid;
+  grid-template-columns: repeat(7, 1fr);
+  gap: 2px;
+}
+
+.grid-semana {
+  margin-bottom: 0.25rem;
+
+  span {
+    text-align: center;
+    font-size: 0.65rem;
+    font-weight: 700;
+    color: var(--color-text-muted);
+    text-transform: uppercase;
+  }
+}
+
+.dia {
+  aspect-ratio: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border: none;
+  border-radius: var(--radius-sm);
+  background: transparent;
+  color: var(--color-text);
+  cursor: pointer;
+  font-size: 0.8rem;
+
+  &:hover:not(:disabled) {
+    background: var(--color-surface-sunken);
+  }
+
+  &.fora-do-mes {
+    color: var(--color-text-muted);
+    opacity: 0.4;
+  }
+
+  &.selecionado {
+    background: var(--color-primary);
+    color: var(--color-on-primary);
+  }
+}

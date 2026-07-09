@@ -25,7 +25,7 @@
         <span class="col-acoes"></span>
       </li>
       @for (disciplina of disciplinas(); track disciplina.id) {
-        <li class="linha">
+        <li class="linha" (click)="abrirPainel(disciplina)">
           <span class="col-avatar">
             <span class="avatar" [style.background]="tagColorVar(disciplina.corIndice)">{{ disciplina.nome.charAt(0).toUpperCase() }}</span>
           </span>
@@ -33,12 +33,12 @@
           <span class="col-creditos">
             <span class="pill">{{ disciplina.creditos }}</span>
           </span>
-          <span class="col-faltas">
+          <span class="col-faltas" (click)="$event.stopPropagation()">
             <button type="button" class="stepper" (click)="ajustarFaltas(disciplina, -1)" [disabled]="disciplina.faltas === 0" aria-label="Diminuir falta">−</button>
             <span class="valor">{{ disciplina.faltas }}</span>
             <button type="button" class="stepper" (click)="ajustarFaltas(disciplina, 1)" aria-label="Adicionar falta">+</button>
           </span>
-          <span class="col-acoes">
+          <span class="col-acoes" (click)="$event.stopPropagation()">
             <button type="button" class="remover" (click)="remover(disciplina)">Remover</button>
           </span>
         </li>
@@ -48,6 +48,64 @@
     <div class="empty-state">
       <p>Nenhuma disciplina cadastrada ainda.</p>
       <p class="hint">Adicione a primeira disciplina do período usando o campo acima.</p>
+    </div>
+  }
+
+  @if (disciplinaSelecionada(); as disciplina) {
+    <div class="popup-overlay" (click)="fecharPainel()">
+      <div class="popup" (click)="$event.stopPropagation()">
+        <h2>{{ disciplina.nome }}</h2>
+        <p class="subtitulo">Provas e trabalhos</p>
+
+        @if (avaliacoesDaDisciplina().length > 0) {
+          <ul class="avaliacoes-lista">
+            @for (avaliacao of avaliacoesDaDisciplina(); track avaliacao.id) {
+              <li>
+                <div class="avaliacao-info">
+                  <span class="tipo" [class.trabalho]="avaliacao.tipo === 'TRABALHO'">{{ avaliacao.tipo === 'PROVA' ? 'Prova' : 'Trabalho' }}</span>
+                  <span class="titulo">{{ avaliacao.titulo }}</span>
+                  <span class="data">{{ formatarDataBr(avaliacao.data) }}</span>
+                  <span class="pontuacao">vale {{ avaliacao.pontuacao }}</span>
+                </div>
+                <div class="avaliacao-nota">
+                  <label>
+                    Nota
+                    <input
+                      type="number"
+                      step="0.1"
+                      min="0"
+                      [value]="avaliacao.nota ?? ''"
+                      (change)="atualizarNota(avaliacao, $any($event.target).value)"
+                      placeholder="—"
+                    />
+                  </label>
+                  <button type="button" class="remover" (click)="removerAvaliacao(avaliacao)">Remover</button>
+                </div>
+              </li>
+            }
+          </ul>
+        } @else {
+          <p class="hint">Nenhuma avaliação cadastrada ainda.</p>
+        }
+
+        <form class="avaliacao-form" [formGroup]="avaliacaoForm" (ngSubmit)="cadastrarAvaliacao()">
+          <input type="text" formControlName="titulo" placeholder="Título (ex: Prova 1)" />
+          <div class="linha-form">
+            <select formControlName="tipo">
+              <option value="PROVA">Prova</option>
+              <option value="TRABALHO">Trabalho</option>
+            </select>
+            <app-date-picker-br formControlName="data" />
+            <input type="number" step="1" min="1" formControlName="pontuacao" placeholder="Pontuação" />
+          </div>
+          @if (avaliacaoErrorMessage()) {
+            <p class="error">{{ avaliacaoErrorMessage() }}</p>
+          }
+          <button type="submit" [disabled]="avaliacaoForm.invalid">Adicionar avaliação</button>
+        </form>
+
+        <button type="button" class="cancelar" (click)="fecharPainel()">Fechar</button>
+      </div>
     </div>
   }
 </div>

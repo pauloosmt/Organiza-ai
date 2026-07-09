@@ -91,6 +91,13 @@
   }
 }
 
+.agenda-do-periodo {
+  h2 {
+    margin: 0 0 0.85rem;
+    font-size: 1.3rem;
+  }
+}
+
 .resumo {
   display: grid;
   grid-template-columns: repeat(3, 1fr);

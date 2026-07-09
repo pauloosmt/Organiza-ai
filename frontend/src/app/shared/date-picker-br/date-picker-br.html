@@ -1,0 +1,35 @@
+<div class="date-picker-br">
+  <button type="button" class="campo" (click)="alternar()" [disabled]="desabilitado()">
+    <span [class.placeholder]="!textoExibido()">{{ textoExibido() || 'dd/mm/aaaa' }}</span>
+  </button>
+
+  @if (aberto()) {
+    <div class="dropdown">
+      <div class="cabecalho">
+        <button type="button" (click)="mesAnterior()" aria-label="Mês anterior">‹</button>
+        <span class="nome-mes">{{ nomeMesExibido() }}</span>
+        <button type="button" (click)="proximoMes()" aria-label="Próximo mês">›</button>
+      </div>
+
+      <div class="grid-semana">
+        @for (nomeDia of nomesDiaSemana; track $index) {
+          <span>{{ nomeDia }}</span>
+        }
+      </div>
+
+      <div class="grid-dias">
+        @for (dia of dias(); track dia.iso) {
+          <button
+            type="button"
+            class="dia"
+            [class.fora-do-mes]="!dia.noMesAtual"
+            [class.selecionado]="dia.iso === valorIso()"
+            (click)="selecionar(dia)"
+          >
+            {{ dia.dia }}
+          </button>
+        }
+      </div>
+    </div>
+  }
+</div>

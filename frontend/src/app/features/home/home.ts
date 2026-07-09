@@ -3,14 +3,17 @@ import { RouterLink } from '@angular/router';
 import { AuthService } from '../../core/auth/auth.service';
 import { PeriodoContextService } from '../../core/periodo/periodo-context.service';
 import { tagColorVar } from '../../core/theme/tag-color';
+import { Avaliacao } from '../avaliacoes/avaliacao.model';
+import { AvaliacoesService } from '../avaliacoes/avaliacoes.service';
 import { Disciplina } from '../disciplinas/disciplina.model';
 import { DisciplinasService } from '../disciplinas/disciplinas.service';
 import { GradeBloco } from '../grade/grade-bloco.model';
 import { GradeService } from '../grade/grade.service';
+import { AgendaMensal } from './agenda-mensal/agenda-mensal';
 
 @Component({
   selector: 'app-home',
-  imports: [RouterLink],
+  imports: [RouterLink, AgendaMensal],
   templateUrl: './home.html',
   styleUrl: './home.scss'
 })
@@ -18,6 +21,7 @@ export class Home implements OnInit {
   private readonly authService = inject(AuthService);
   private readonly disciplinasService = inject(DisciplinasService);
   private readonly gradeService = inject(GradeService);
+  private readonly avaliacoesService = inject(AvaliacoesService);
   private readonly periodoContext = inject(PeriodoContextService);
 
   readonly currentUser = this.authService.currentUser;
@@ -25,6 +29,7 @@ export class Home implements OnInit {
 
   private readonly disciplinas = signal<Disciplina[]>([]);
   private readonly blocos = signal<GradeBloco[]>([]);
+  readonly avaliacoes = signal<Avaliacao[]>([]);
 
   readonly tagColorVar = tagColorVar;
 
@@ -53,9 +58,11 @@ export class Home implements OnInit {
       if (periodo) {
         this.disciplinasService.list(periodo.id).subscribe((disciplinas) => this.disciplinas.set(disciplinas));
         this.gradeService.list(periodo.id).subscribe((blocos) => this.blocos.set(blocos));
+        this.avaliacoesService.list(periodo.id).subscribe((avaliacoes) => this.avaliacoes.set(avaliacoes));
       } else {
         this.disciplinas.set([]);
         this.blocos.set([]);
+        this.avaliacoes.set([]);
       }
     });
   }
