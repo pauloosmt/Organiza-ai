@@ -1,12 +1,11 @@
 import { Component, inject } from '@angular/core';
 import { RouterOutlet } from '@angular/router';
 import { ThemeService } from './core/theme/theme.service';
-import { ColdStartBanner } from './shared/cold-start-banner/cold-start-banner';
 import { BackendWarmupService } from './core/cold-start/backend-warmup.service';
 
 @Component({
   selector: 'app-root',
-  imports: [RouterOutlet, ColdStartBanner],
+  imports: [RouterOutlet],
   templateUrl: './app.html',
   styleUrl: './app.scss'
 })
