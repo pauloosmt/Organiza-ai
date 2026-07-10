@@ -8,14 +8,19 @@ export class PeriodoContextService {
   private readonly periodoService = inject(PeriodoService);
 
   readonly periodos = signal<Periodo[]>([]);
+  readonly carregado = signal(false);
   private readonly periodoAtualId = signal<string | null>(null);
 
   readonly periodoAtual = computed(
     () => this.periodos().find((p) => p.id === this.periodoAtualId()) ?? null
   );
 
+  readonly precisaCriarPeriodo = computed(
+    () => this.carregado() && this.periodos().length === 0
+  );
+
   carregar(): void {
-    if (this.periodos().length > 0) {
+    if (this.carregado()) {
       return;
     }
     this.periodoService.list().subscribe((periodos) => {
@@ -23,6 +28,7 @@ export class PeriodoContextService {
       if (periodos.length > 0) {
         this.periodoAtualId.set(periodos[0].id);
       }
+      this.carregado.set(true);
     });
   }
 

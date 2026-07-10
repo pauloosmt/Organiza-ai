@@ -1,0 +1,24 @@
+@if (context.precisaCriarPeriodo()) {
+  <div class="periodo-obrigatorio-overlay">
+    <div class="periodo-obrigatorio-card">
+      <h2>Crie seu primeiro período</h2>
+      <p>Suas disciplinas, grade e avaliações são organizadas por período. Comece criando o período atual.</p>
+
+      <div class="campos">
+        <input type="number" [ngModel]="ano()" (ngModelChange)="ano.set($event)" min="2000" max="2100" />
+        <select [ngModel]="semestre()" (ngModelChange)="semestre.set($event)">
+          <option [ngValue]="1">1º semestre</option>
+          <option [ngValue]="2">2º semestre</option>
+        </select>
+      </div>
+
+      @if (errorMessage()) {
+        <span class="error">{{ errorMessage() }}</span>
+      }
+
+      <button type="button" [disabled]="salvando()" (click)="criar()">
+        {{ salvando() ? 'Criando…' : 'Criar período' }}
+      </button>
+    </div>
+  </div>
+}
