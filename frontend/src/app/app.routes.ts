@@ -18,6 +18,10 @@ export const routes: Routes = [
       {
         path: 'grade',
         loadComponent: () => import('./features/grade/grade-board').then((m) => m.GradeBoard)
+      },
+      {
+        path: 'premium',
+        loadComponent: () => import('./features/premium/premium').then((m) => m.Premium)
       }
     ]
   },

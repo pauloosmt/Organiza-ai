@@ -1,0 +1,32 @@
+<div class="premium-page">
+  <header class="page-header">
+    <h1>Organiza aí Premium</h1>
+    <span class="badge">Em breve</span>
+  </header>
+
+  <p class="intro">
+    Estamos avaliando um plano pago para manter o Organiza aí no ar e trazer novidades. Registre seu interesse
+    e avisamos você em primeira mão quando o Premium for lançado — sem compromisso nenhum.
+  </p>
+
+  <ul class="beneficios">
+    @for (beneficio of beneficios; track beneficio.titulo) {
+      <li>
+        <span class="titulo">{{ beneficio.titulo }}</span>
+        <span class="descricao">{{ beneficio.descricao }}</span>
+      </li>
+    }
+  </ul>
+
+  <div class="cta">
+    @if (registrado()) {
+      <button type="button" class="registrado" disabled>Interesse registrado ✓</button>
+      <p class="hint">Obrigado! Você será avisado quando o Premium estiver disponível.</p>
+    } @else {
+      <button type="button" (click)="registrarInteresse()" [disabled]="carregando()">
+        {{ carregando() ? 'Registrando...' : 'Quero ser avisado' }}
+      </button>
+      <p class="hint">Sem cobrança agora — é só pra medir o interesse.</p>
+    }
+  </div>
+</div>
