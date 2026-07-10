@@ -1,11 +1,13 @@
 import { HttpClient } from '@angular/common/http';
-import { Injectable, signal } from '@angular/core';
+import { Injectable, inject, signal } from '@angular/core';
 import { Observable, tap } from 'rxjs';
 import { environment } from '../../../environments/environment';
+import { PeriodoContextService } from '../periodo/periodo-context.service';
 import { User } from './user.model';
 
 @Injectable({ providedIn: 'root' })
 export class AuthService {
+  private readonly periodoContext = inject(PeriodoContextService);
   private readonly currentUserSignal = signal<User | null>(null);
   readonly currentUser = this.currentUserSignal.asReadonly();
 
@@ -22,9 +24,12 @@ export class AuthService {
   }
 
   logout(): Observable<void> {
-    return this.http
-      .post<void>(`${environment.apiUrl}/auth/logout`, {})
-      .pipe(tap(() => this.currentUserSignal.set(null)));
+    return this.http.post<void>(`${environment.apiUrl}/auth/logout`, {}).pipe(
+      tap(() => {
+        this.currentUserSignal.set(null);
+        this.periodoContext.resetar();
+      })
+    );
   }
 
   fetchCurrentUser(): Observable<User> {

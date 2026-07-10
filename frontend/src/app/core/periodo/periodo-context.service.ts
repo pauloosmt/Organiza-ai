@@ -36,6 +36,12 @@ export class PeriodoContextService {
     this.periodoAtualId.set(id);
   }
 
+  resetar(): void {
+    this.periodos.set([]);
+    this.periodoAtualId.set(null);
+    this.carregado.set(false);
+  }
+
   criar(ano: number, semestre: 1 | 2): Observable<Periodo> {
     return this.periodoService.create(ano, semestre).pipe(
       tap((periodo) => {
