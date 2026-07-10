@@ -51,6 +51,14 @@
               ],
               "outputHashing": "all",
               "sourceMap": false,
+              "optimization": {
+                "scripts": true,
+                "fonts": true,
+                "styles": {
+                  "minify": true,
+                  "inlineCritical": false
+                }
+              },
               "index": {
                 "input": "src/index.prod.html",
                 "output": "index.html"
