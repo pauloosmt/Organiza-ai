@@ -3,6 +3,7 @@
   "outputDirectory": "dist/frontend/browser",
   "rewrites": [
     { "source": "/api/:path*", "destination": "https://organizaai-api-6nfk.onrender.com/api/:path*" },
+    { "source": "/healthz", "destination": "https://organizaai-api-6nfk.onrender.com/actuator/health" },
     { "source": "/(.*)", "destination": "/index.html" }
   ]
 }
