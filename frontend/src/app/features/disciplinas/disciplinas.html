@@ -35,7 +35,7 @@
           </span>
           <span class="col-faltas" (click)="$event.stopPropagation()">
             <button type="button" class="stepper" (click)="ajustarFaltas(disciplina, -1)" [disabled]="disciplina.faltas === 0" aria-label="Diminuir falta">−</button>
-            <span class="valor">{{ disciplina.faltas }}</span>
+            <span class="valor" [class.limite-atingido]="atingiuLimiteFaltas(disciplina)">{{ disciplina.faltas }} / {{ limiteFaltas(disciplina) }}</span>
             <button type="button" class="stepper" (click)="ajustarFaltas(disciplina, 1)" aria-label="Adicionar falta">+</button>
           </span>
           <span class="col-acoes" (click)="$event.stopPropagation()">

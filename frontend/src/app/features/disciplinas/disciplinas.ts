@@ -8,6 +8,7 @@ import { Avaliacao } from '../avaliacoes/avaliacao.model';
 import { AvaliacoesService } from '../avaliacoes/avaliacoes.service';
 import { Disciplina } from './disciplina.model';
 import { DisciplinasService } from './disciplinas.service';
+import { atingiuLimiteFaltas, limiteFaltas } from './faltas-limite.util';
 
 @Component({
   selector: 'app-disciplinas',
@@ -51,6 +52,8 @@ export class Disciplinas implements OnInit {
 
   readonly tagColorVar = tagColorVar;
   readonly formatarDataBr = formatarDataBr;
+  readonly limiteFaltas = limiteFaltas;
+  readonly atingiuLimiteFaltas = atingiuLimiteFaltas;
 
   constructor() {
     effect(() => {

@@ -163,9 +163,13 @@
   gap: 0.5rem;
 
   .valor {
-    min-width: 1.2rem;
+    min-width: 2.4rem;
     text-align: center;
     font-weight: 700;
+
+    &.limite-atingido {
+      color: var(--color-danger);
+    }
   }
 
   .stepper {

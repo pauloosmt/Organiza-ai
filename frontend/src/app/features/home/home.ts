@@ -7,6 +7,7 @@ import { Avaliacao } from '../avaliacoes/avaliacao.model';
 import { AvaliacoesService } from '../avaliacoes/avaliacoes.service';
 import { Disciplina } from '../disciplinas/disciplina.model';
 import { DisciplinasService } from '../disciplinas/disciplinas.service';
+import { atingiuLimiteFaltas, limiteFaltas } from '../disciplinas/faltas-limite.util';
 import { GradeBloco } from '../grade/grade-bloco.model';
 import { GradeService } from '../grade/grade.service';
 import { AgendaMensal } from './agenda-mensal/agenda-mensal';
@@ -32,6 +33,8 @@ export class Home implements OnInit {
   readonly avaliacoes = signal<Avaliacao[]>([]);
 
   readonly tagColorVar = tagColorVar;
+  readonly limiteFaltas = limiteFaltas;
+  readonly atingiuLimiteFaltas = atingiuLimiteFaltas;
 
   readonly resumo = computed(() => {
     const disciplinas = this.disciplinas();

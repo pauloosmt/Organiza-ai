@@ -47,7 +47,7 @@
       </div>
       @if (resumo().disciplinaMaisFaltas; as maisFaltas) {
         <div class="card alert">
-          <span class="numero">{{ maisFaltas.faltas }}</span>
+          <span class="numero" [class.limite-atingido]="atingiuLimiteFaltas(maisFaltas)">{{ maisFaltas.faltas }} / {{ limiteFaltas(maisFaltas) }}</span>
           <span class="disc-nome">{{ maisFaltas.nome }}</span>
           <span class="rotulo">maior nº de faltas</span>
         </div>

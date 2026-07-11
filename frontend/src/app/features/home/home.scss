@@ -128,7 +128,7 @@
   }
 
   .card.alert {
-    .numero {
+    .numero.limite-atingido {
       color: var(--color-danger);
     }
 
