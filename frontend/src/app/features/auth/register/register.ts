@@ -37,7 +37,7 @@ export class Register {
     this.authService.register(name!, email!, password!).subscribe({
       next: () => {
         this.submitting.set(false);
-        this.router.navigateByUrl('/login');
+        this.router.navigate(['/verificar-email'], { queryParams: { email } });
       },
       error: (err) => {
         this.submitting.set(false);

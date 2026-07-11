@@ -1,0 +1,37 @@
+<app-auth-layout>
+  <p class="eyebrow">Falta pouco</p>
+  <h1>Verifique seu email</h1>
+  <p class="hint">Enviamos um código de 6 dígitos para o seu email. Digite abaixo para confirmar sua conta.</p>
+
+  <form [formGroup]="form" (ngSubmit)="submit()">
+    <div class="field">
+      <label for="codigo">Código de verificação</label>
+      <input
+        id="codigo"
+        type="text"
+        inputmode="numeric"
+        maxlength="6"
+        formControlName="codigo"
+        autocomplete="one-time-code"
+        placeholder="000000"
+      />
+    </div>
+
+    @if (errorMessage()) {
+      <p class="error">{{ errorMessage() }}</p>
+    }
+
+    @if (infoMessage()) {
+      <p class="info">{{ infoMessage() }}</p>
+    }
+
+    <button type="submit" class="submit" [disabled]="form.invalid || submitting()">
+      {{ submitting() ? 'Verificando...' : 'Verificar' }}
+    </button>
+  </form>
+
+  <p class="switch">
+    Não recebeu o código?
+    <a (click)="reenviarCodigo()">{{ reenviando() ? 'Reenviando...' : 'Reenviar código' }}</a>
+  </p>
+</app-auth-layout>

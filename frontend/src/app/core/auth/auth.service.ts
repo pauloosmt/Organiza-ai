@@ -17,6 +17,14 @@ export class AuthService {
     return this.http.post<User>(`${environment.apiUrl}/auth/register`, { name, email, password });
   }
 
+  verificarEmail(email: string, codigo: string): Observable<void> {
+    return this.http.post<void>(`${environment.apiUrl}/auth/verificar-email`, { email, codigo });
+  }
+
+  reenviarCodigo(email: string): Observable<void> {
+    return this.http.post<void>(`${environment.apiUrl}/auth/reenviar-codigo`, { email });
+  }
+
   login(email: string, password: string): Observable<User> {
     return this.http
       .post<User>(`${environment.apiUrl}/auth/login`, { email, password })
@@ -25,10 +33,7 @@ export class AuthService {
 
   logout(): Observable<void> {
     return this.http.post<void>(`${environment.apiUrl}/auth/logout`, {}).pipe(
-      tap(() => {
-        this.currentUserSignal.set(null);
-        this.periodoContext.resetar();
-      })
+      tap(() => this.limparSessaoLocal())
     );
   }
 
@@ -36,5 +41,10 @@ export class AuthService {
     return this.http
       .get<User>(`${environment.apiUrl}/users/me`)
       .pipe(tap((user) => this.currentUserSignal.set(user)));
+  }
+
+  limparSessaoLocal(): void {
+    this.currentUserSignal.set(null);
+    this.periodoContext.resetar();
   }
 }
