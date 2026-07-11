@@ -1,12 +1,14 @@
 package com.organizaai.exceptions.general;
 
 import com.organizaai.exceptions.entity.AvaliacaoNotFoundException;
+import com.organizaai.exceptions.entity.CodigoVerificacaoInvalidoException;
 import com.organizaai.exceptions.entity.DisciplinaNotFoundException;
 import com.organizaai.exceptions.entity.EmailAlreadyExistsException;
 import com.organizaai.exceptions.entity.FaltasNegativasException;
 import com.organizaai.exceptions.entity.GradeBlocoNotFoundException;
 import com.organizaai.exceptions.entity.HorarioSobrepostoException;
 import com.organizaai.exceptions.entity.PeriodoJaExisteException;
+import com.organizaai.exceptions.login.EmailNaoVerificadoException;
 import com.organizaai.exceptions.login.InvalidCredentialsException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -29,6 +31,16 @@ public class GlobalExceptionHandler {
     @ExceptionHandler(InvalidCredentialsException.class)
     public ResponseEntity<Map<String, Object>> handleInvalidCredentials(InvalidCredentialsException ex) {
         return buildResponse(HttpStatus.UNAUTHORIZED, ex.getMessage());
+    }
+
+    @ExceptionHandler(EmailNaoVerificadoException.class)
+    public ResponseEntity<Map<String, Object>> handleEmailNaoVerificado(EmailNaoVerificadoException ex) {
+        return buildResponse(HttpStatus.FORBIDDEN, ex.getMessage());
+    }
+
+    @ExceptionHandler(CodigoVerificacaoInvalidoException.class)
+    public ResponseEntity<Map<String, Object>> handleCodigoVerificacaoInvalido(CodigoVerificacaoInvalidoException ex) {
+        return buildResponse(HttpStatus.BAD_REQUEST, ex.getMessage());
     }
 
     @ExceptionHandler({DisciplinaNotFoundException.class, GradeBlocoNotFoundException.class, AvaliacaoNotFoundException.class})

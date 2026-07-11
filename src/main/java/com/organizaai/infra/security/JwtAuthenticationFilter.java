@@ -7,6 +7,7 @@ import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.HttpHeaders;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Component;
@@ -35,6 +36,9 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
                 .ifPresent(user -> {
                     var authentication = new UsernamePasswordAuthenticationToken(user, null, List.of());
                     SecurityContextHolder.getContext().setAuthentication(authentication);
+
+                    String tokenRenovado = jwtService.generateToken(user.getEmail());
+                    response.addHeader(HttpHeaders.SET_COOKIE, jwtService.buildCookie(tokenRenovado).toString());
                 });
 
         filterChain.doFilter(request, response);

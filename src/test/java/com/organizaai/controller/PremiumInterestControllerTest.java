@@ -2,6 +2,8 @@ package com.organizaai.controller;
 
 import com.organizaai.data.dto.request.LoginRequest;
 import com.organizaai.data.dto.request.RegisterRequest;
+import com.organizaai.data.dto.request.VerificarEmailRequest;
+import com.organizaai.repository.UserRepository;
 import jakarta.servlet.http.Cookie;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -26,9 +28,12 @@ class PremiumInterestControllerTest {
     @Autowired
     private ObjectMapper objectMapper;
 
+    @Autowired
+    private UserRepository userRepository;
+
     @Test
     void statusComecaNaoRegistrado() throws Exception {
-        Cookie cookie = registerAndLogin("julia@example.com");
+        Cookie cookie = registerAndLogin("julia-premium@example.com");
 
         mockMvc.perform(get("/api/premium/interesse").cookie(cookie))
                 .andExpect(status().isOk())
@@ -66,6 +71,12 @@ class PremiumInterestControllerTest {
                         .content(objectMapper.writeValueAsString(
                                 new RegisterRequest("Usuario Teste", email, "senha1234"))))
                 .andExpect(status().isCreated());
+
+        String codigo = userRepository.findByEmail(email).orElseThrow().getCodigoVerificacao();
+        mockMvc.perform(post("/api/auth/verificar-email")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(new VerificarEmailRequest(email, codigo))))
+                .andExpect(status().isNoContent());
 
         var loginResult = mockMvc.perform(post("/api/auth/login")
                         .contentType(MediaType.APPLICATION_JSON)

@@ -6,7 +6,9 @@ import com.organizaai.data.dto.request.CreatePeriodoRequest;
 import com.organizaai.data.dto.request.LoginRequest;
 import com.organizaai.data.dto.request.RegisterRequest;
 import com.organizaai.data.dto.request.UpdateAvaliacaoRequest;
+import com.organizaai.data.dto.request.VerificarEmailRequest;
 import com.organizaai.data.entity.TipoAvaliacao;
+import com.organizaai.repository.UserRepository;
 import jakarta.servlet.http.Cookie;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -38,6 +40,9 @@ class AvaliacaoControllerTest {
 
     @Autowired
     private ObjectMapper objectMapper;
+
+    @Autowired
+    private UserRepository userRepository;
 
     @Test
     void criaAvaliacaoSemNota() throws Exception {
@@ -177,6 +182,12 @@ class AvaliacaoControllerTest {
                         .content(objectMapper.writeValueAsString(
                                 new RegisterRequest("Usuario Teste", email, "senha1234"))))
                 .andExpect(status().isCreated());
+
+        String codigo = userRepository.findByEmail(email).orElseThrow().getCodigoVerificacao();
+        mockMvc.perform(post("/api/auth/verificar-email")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(new VerificarEmailRequest(email, codigo))))
+                .andExpect(status().isNoContent());
 
         MvcResult loginResult = mockMvc.perform(post("/api/auth/login")
                         .contentType(MediaType.APPLICATION_JSON)

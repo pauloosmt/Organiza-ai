@@ -1,0 +1,47 @@
+package com.organizaai.infra.email;
+
+import com.organizaai.data.entity.Avaliacao;
+import com.organizaai.data.entity.Disciplina;
+import com.organizaai.data.entity.User;
+import com.organizaai.repository.AvaliacaoRepository;
+import com.organizaai.repository.DisciplinaRepository;
+import com.organizaai.repository.UserRepository;
+import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.scheduling.annotation.Scheduled;
+import org.springframework.stereotype.Component;
+
+import java.time.LocalDate;
+
+@Slf4j
+@Component
+@RequiredArgsConstructor
+public class AvaliacaoLembreteScheduler {
+
+    private final AvaliacaoRepository avaliacaoRepository;
+    private final DisciplinaRepository disciplinaRepository;
+    private final UserRepository userRepository;
+    private final EmailService emailService;
+
+    @Scheduled(cron = "0 0 8 * * *")
+    public void enviarLembretes() {
+        LocalDate dataAlvo = LocalDate.now().plusDays(7);
+        for (Avaliacao avaliacao : avaliacaoRepository.findByDataAndLembreteEnviadoFalse(dataAlvo)) {
+            enviarLembrete(avaliacao);
+        }
+    }
+
+    private void enviarLembrete(Avaliacao avaliacao) {
+        Disciplina disciplina = disciplinaRepository.findById(avaliacao.getDisciplinaId()).orElse(null);
+        if (disciplina == null) {
+            return;
+        }
+        User dono = userRepository.findById(avaliacao.getUserId()).orElse(null);
+        if (dono == null) {
+            return;
+        }
+        emailService.enviarLembreteAvaliacao(dono, avaliacao, disciplina.getNome());
+        avaliacao.setLembreteEnviado(true);
+        avaliacaoRepository.save(avaliacao);
+    }
+}

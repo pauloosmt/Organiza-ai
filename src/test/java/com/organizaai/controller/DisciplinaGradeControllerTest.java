@@ -6,6 +6,8 @@ import com.organizaai.data.dto.request.CreateGradeBlocoRequest;
 import com.organizaai.data.dto.request.CreatePeriodoRequest;
 import com.organizaai.data.dto.request.LoginRequest;
 import com.organizaai.data.dto.request.RegisterRequest;
+import com.organizaai.data.dto.request.VerificarEmailRequest;
+import com.organizaai.repository.UserRepository;
 import jakarta.servlet.http.Cookie;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -35,6 +37,9 @@ class DisciplinaGradeControllerTest {
 
     @Autowired
     private ObjectMapper objectMapper;
+
+    @Autowired
+    private UserRepository userRepository;
 
     @Test
     void createDisciplinaStartsWithZeroCreditosEFaltas() throws Exception {
@@ -200,6 +205,12 @@ class DisciplinaGradeControllerTest {
                         .content(objectMapper.writeValueAsString(
                                 new RegisterRequest("Usuario Teste", email, "senha1234"))))
                 .andExpect(status().isCreated());
+
+        String codigo = userRepository.findByEmail(email).orElseThrow().getCodigoVerificacao();
+        mockMvc.perform(post("/api/auth/verificar-email")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(new VerificarEmailRequest(email, codigo))))
+                .andExpect(status().isNoContent());
 
         MvcResult loginResult = mockMvc.perform(post("/api/auth/login")
                         .contentType(MediaType.APPLICATION_JSON)

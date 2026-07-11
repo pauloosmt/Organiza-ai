@@ -3,6 +3,7 @@ package com.organizaai.repository;
 import com.organizaai.data.entity.Avaliacao;
 import org.springframework.data.jpa.repository.JpaRepository;
 
+import java.time.LocalDate;
 import java.util.Collection;
 import java.util.List;
 import java.util.Optional;
@@ -15,4 +16,6 @@ public interface AvaliacaoRepository extends JpaRepository<Avaliacao, UUID> {
     Optional<Avaliacao> findByIdAndUserId(UUID id, UUID userId);
 
     void deleteByDisciplinaId(UUID disciplinaId);
+
+    List<Avaliacao> findByDataAndLembreteEnviadoFalse(LocalDate data);
 }
