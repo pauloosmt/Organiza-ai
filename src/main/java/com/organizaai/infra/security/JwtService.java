@@ -4,6 +4,7 @@ import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.JwtException;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.security.Keys;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.ResponseCookie;
 import org.springframework.stereotype.Component;
@@ -14,6 +15,7 @@ import java.time.Duration;
 import java.util.Date;
 import java.util.Optional;
 
+@Slf4j
 @Component
 public class JwtService {
 
@@ -31,6 +33,8 @@ public class JwtService {
         this.signingKey = Keys.hmacShaKeyFor(secret.getBytes(StandardCharsets.UTF_8));
         this.expirationMs = expirationMs;
         this.cookieSecure = cookieSecure;
+        log.info("JwtService iniciado: expirationMs={} ({} min), cookieSecure={}, secretLength={}",
+                expirationMs, expirationMs / 60000, cookieSecure, secret.length());
     }
 
     public String generateToken(String subjectEmail) {
@@ -53,6 +57,7 @@ public class JwtService {
                     .getPayload();
             return Optional.of(claims.getSubject());
         } catch (JwtException | IllegalArgumentException ex) {
+            log.warn("Falha ao validar token JWT: {} - {}", ex.getClass().getSimpleName(), ex.getMessage());
             return Optional.empty();
         }
     }
