@@ -278,5 +278,9 @@
 
   .board {
     grid-template-columns: 70px repeat(6, minmax(92px, 1fr));
+    // Sem isso o .board (um bloco normal dentro do .board-scroll) encolhe
+    // pra caber na largura da tela em vez de respeitar os mínimos de
+    // 92px por coluna — aí nunca sobra nada pra rolar.
+    width: max-content;
   }
 }
