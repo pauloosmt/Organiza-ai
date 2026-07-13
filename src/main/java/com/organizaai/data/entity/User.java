@@ -54,6 +54,18 @@ public class User {
     @Column(name = "codigo_verificacao_expira_em")
     private Instant codigoVerificacaoExpiraEm;
 
+    @Column(name = "tema")
+    private String tema;
+
+    @Column(name = "nova_senha_hash")
+    private String novaSenhaHash;
+
+    @Column(name = "codigo_troca_senha")
+    private String codigoTrocaSenha;
+
+    @Column(name = "codigo_troca_senha_expira_em")
+    private Instant codigoTrocaSenhaExpiraEm;
+
     @Column(name = "created_at", nullable = false, updatable = false)
     private Instant createdAt;
 

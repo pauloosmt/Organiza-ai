@@ -8,6 +8,7 @@ import com.organizaai.exceptions.entity.FaltasNegativasException;
 import com.organizaai.exceptions.entity.GradeBlocoNotFoundException;
 import com.organizaai.exceptions.entity.HorarioSobrepostoException;
 import com.organizaai.exceptions.entity.PeriodoJaExisteException;
+import com.organizaai.exceptions.entity.SenhaAtualInvalidaException;
 import com.organizaai.exceptions.login.EmailNaoVerificadoException;
 import com.organizaai.exceptions.login.InvalidCredentialsException;
 import org.springframework.http.HttpStatus;
@@ -40,6 +41,11 @@ public class GlobalExceptionHandler {
 
     @ExceptionHandler(CodigoVerificacaoInvalidoException.class)
     public ResponseEntity<Map<String, Object>> handleCodigoVerificacaoInvalido(CodigoVerificacaoInvalidoException ex) {
+        return buildResponse(HttpStatus.BAD_REQUEST, ex.getMessage());
+    }
+
+    @ExceptionHandler(SenhaAtualInvalidaException.class)
+    public ResponseEntity<Map<String, Object>> handleSenhaAtualInvalida(SenhaAtualInvalidaException ex) {
         return buildResponse(HttpStatus.BAD_REQUEST, ex.getMessage());
     }
 

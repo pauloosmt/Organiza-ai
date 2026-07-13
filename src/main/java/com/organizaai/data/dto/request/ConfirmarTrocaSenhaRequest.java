@@ -2,8 +2,9 @@ package com.organizaai.data.dto.request;
 
 import jakarta.validation.constraints.NotBlank;
 
-public record UpdateUserRequest(
+public record ConfirmarTrocaSenhaRequest(
+
         @NotBlank
-        String name
+        String codigo
 ) {
 }

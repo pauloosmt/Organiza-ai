@@ -2,8 +2,9 @@ package com.organizaai.data.dto.request;
 
 import jakarta.validation.constraints.NotBlank;
 
-public record UpdateUserRequest(
+public record ExcluirContaRequest(
+
         @NotBlank
-        String name
+        String senha
 ) {
 }

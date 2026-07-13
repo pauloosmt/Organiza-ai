@@ -45,6 +45,20 @@ public class EmailService {
         enviar(destinatario.getEmail(), "Confirme seu email - Organiza Aí", montarHtml(corpo, true));
     }
 
+    public void enviarCodigoTrocaSenha(User destinatario, String codigo) {
+        String corpo = "<p>Olá, <strong>" + destinatario.getName() + "</strong>!</p>"
+                + "<p>Use o código abaixo para confirmar a troca da sua senha:</p>"
+                + "<div style=\"text-align:center; margin: 28px 0;\">"
+                + "<span style=\"display:inline-block; font-family: 'Courier New', monospace; font-size: 32px; "
+                + "font-weight: 700; letter-spacing: 8px; color:#b3131e; background:#fbf9f8; "
+                + "border: 1px solid #e6e1de; border-radius: 10px; padding: 14px 20px;\">" + codigo + "</span>"
+                + "</div>"
+                + "<p>Esse código expira em <strong>15 minutos</strong>.</p>"
+                + "<p style=\"margin-top: 24px; font-size: 13px; color:#6b6260;\">Se você não pediu essa troca de "
+                + "senha, pode ignorar este email — sua senha continua a mesma.</p>";
+        enviar(destinatario.getEmail(), "Confirme a troca de senha - Organiza Aí", montarHtml(corpo, true));
+    }
+
     public void enviarLembreteAvaliacao(User destinatario, Avaliacao avaliacao, String disciplinaNome) {
         String tipo = avaliacao.getTipo() == TipoAvaliacao.PROVA ? "Prova" : "Trabalho";
         String corpo = "<p>Olá, <strong>" + destinatario.getName() + "</strong>!</p>"

@@ -17,5 +17,7 @@ public interface AvaliacaoRepository extends JpaRepository<Avaliacao, UUID> {
 
     void deleteByDisciplinaId(UUID disciplinaId);
 
+    void deleteByUserId(UUID userId);
+
     List<Avaliacao> findByDataAndLembreteEnviadoFalse(LocalDate data);
 }

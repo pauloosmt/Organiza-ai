@@ -14,4 +14,6 @@ public interface PeriodoRepository extends JpaRepository<Periodo, UUID> {
     Optional<Periodo> findByUserIdAndNome(UUID userId, String nome);
 
     Optional<Periodo> findByIdAndUserId(UUID id, UUID userId);
+
+    void deleteByUserId(UUID userId);
 }

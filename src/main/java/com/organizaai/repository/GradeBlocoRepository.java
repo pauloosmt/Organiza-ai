@@ -21,4 +21,6 @@ public interface GradeBlocoRepository extends JpaRepository<GradeBloco, UUID> {
     long countByDisciplinaId(UUID disciplinaId);
 
     void deleteByDisciplinaId(UUID disciplinaId);
+
+    void deleteByUserId(UUID userId);
 }

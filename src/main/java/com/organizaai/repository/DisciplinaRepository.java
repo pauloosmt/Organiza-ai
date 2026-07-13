@@ -20,4 +20,6 @@ public interface DisciplinaRepository extends JpaRepository<Disciplina, UUID> {
     Optional<Disciplina> findByIdAndUserIdAndPeriodoId(UUID id, UUID userId, UUID periodoId);
 
     long countByUserId(UUID userId);
+
+    void deleteByUserId(UUID userId);
 }
