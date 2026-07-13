@@ -1,0 +1,110 @@
+<div class="perfil-page">
+  <header class="page-header">
+    <h1>Perfil</h1>
+  </header>
+
+  @if (currentUser(); as user) {
+    <section class="card">
+      <h2>Seus dados</h2>
+      <form [formGroup]="nomeForm" (ngSubmit)="salvarNome()">
+        <div class="field">
+          <label for="name">Nome</label>
+          <input id="name" type="text" formControlName="name" />
+        </div>
+        <div class="field">
+          <label>Email</label>
+          <input type="email" [value]="user.email" disabled />
+        </div>
+        @if (nomeErro()) {
+          <p class="error">{{ nomeErro() }}</p>
+        }
+        @if (nomeSalvo()) {
+          <p class="info">Nome salvo.</p>
+        }
+        <button type="submit" [disabled]="nomeForm.invalid">Salvar nome</button>
+      </form>
+      <p class="membro-desde">Membro desde {{ membroDesde(user.createdAt) }}</p>
+    </section>
+
+    <section class="card">
+      <h2>Senha</h2>
+      @if (faseSenha() === 'idle') {
+        <form [formGroup]="senhaForm" (ngSubmit)="iniciarTrocaSenha()">
+          <div class="field">
+            <label for="novaSenha">Nova senha</label>
+            <input id="novaSenha" type="password" formControlName="novaSenha" autocomplete="new-password" />
+          </div>
+          <div class="field">
+            <label for="confirmarSenha">Confirmar nova senha</label>
+            <input id="confirmarSenha" type="password" formControlName="confirmarSenha" autocomplete="new-password" />
+          </div>
+          @if (senhaErro()) {
+            <p class="error">{{ senhaErro() }}</p>
+          }
+          <button type="submit" [disabled]="senhaForm.invalid || senhaEnviando()">
+            {{ senhaEnviando() ? 'Enviando...' : 'Trocar senha' }}
+          </button>
+        </form>
+      } @else {
+        <form [formGroup]="codigoSenhaForm" (ngSubmit)="confirmarTrocaSenha()">
+          <p class="hint">Enviamos um código de 6 dígitos para o seu email. Digite abaixo pra confirmar a troca.</p>
+          <div class="field">
+            <label for="codigo">Código de verificação</label>
+            <input id="codigo" type="text" inputmode="numeric" maxlength="6" formControlName="codigo" placeholder="000000" />
+          </div>
+          @if (senhaErro()) {
+            <p class="error">{{ senhaErro() }}</p>
+          }
+          <button type="submit" [disabled]="codigoSenhaForm.invalid || senhaEnviando()">
+            {{ senhaEnviando() ? 'Confirmando...' : 'Confirmar' }}
+          </button>
+          <p class="switch">
+            Não recebeu o código?
+            <a (click)="reenviarCodigoTrocaSenha()">{{ reenviandoCodigoSenha() ? 'Reenviando...' : 'Reenviar código' }}</a>
+          </p>
+          <button type="button" class="cancelar" (click)="cancelarTrocaSenha()">Cancelar</button>
+        </form>
+      }
+      @if (senhaInfo()) {
+        <p class="info">{{ senhaInfo() }}</p>
+      }
+    </section>
+
+    <section class="card">
+      <h2>Tema</h2>
+      <button type="button" class="theme-toggle" (click)="themeService.alternar()">
+        {{ themeService.tema() === 'dark' ? 'Mudar para modo claro' : 'Mudar para modo escuro' }}
+      </button>
+    </section>
+
+    <section class="card perigo">
+      <h2>Excluir conta</h2>
+      <p class="hint">Isso apaga permanentemente sua conta, períodos, disciplinas, grade e avaliações. Não tem como desfazer.</p>
+      <button type="button" class="excluir" (click)="abrirExcluirPopup()">Excluir minha conta</button>
+    </section>
+  }
+
+  @if (excluirPopupAberto()) {
+    <div class="popup-overlay" (click)="fecharExcluirPopup()">
+      <div class="popup" (click)="$event.stopPropagation()">
+        <h2>Excluir conta</h2>
+        <p class="subtitulo">Digite sua senha atual pra confirmar. Essa ação não pode ser desfeita.</p>
+        <form [formGroup]="excluirForm" (ngSubmit)="confirmarExclusao()">
+          <div class="field">
+            <label for="senhaExclusao">Senha</label>
+            <input id="senhaExclusao" type="password" formControlName="senha" autocomplete="current-password" />
+          </div>
+          @if (excluirErro()) {
+            <p class="error">{{ excluirErro() }}</p>
+          }
+          <div class="popup-actions">
+            <button type="button" class="cancelar" (click)="fecharExcluirPopup()">Cancelar</button>
+            <button type="submit" class="excluir" [disabled]="excluirForm.invalid || excluindo()">
+              {{ excluindo() ? 'Excluindo...' : 'Excluir definitivamente' }}
+            </button>
+          </div>
+        </form>
+      </div>
+    </div>
+  }
+</div>

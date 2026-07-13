@@ -1,4 +1,6 @@
-import { Injectable, computed, signal } from '@angular/core';
+import { HttpClient } from '@angular/common/http';
+import { Injectable, computed, inject, signal } from '@angular/core';
+import { environment } from '../../../environments/environment';
 
 type Tema = 'light' | 'dark';
 
@@ -6,6 +8,7 @@ const STORAGE_KEY = 'organizaai_theme';
 
 @Injectable({ providedIn: 'root' })
 export class ThemeService {
+  private readonly http = inject(HttpClient);
   private readonly temaEscolhido = signal<Tema | null>(this.lerEscolhaSalva());
 
   readonly tema = computed(() => this.temaEscolhido() ?? this.preferenciaDoSistema());
@@ -18,6 +21,16 @@ export class ThemeService {
     const proximo: Tema = this.tema() === 'dark' ? 'light' : 'dark';
     this.temaEscolhido.set(proximo);
     localStorage.setItem(STORAGE_KEY, proximo);
+    this.aplicar();
+    this.http.put(`${environment.apiUrl}/users/me/tema`, { tema: proximo }).subscribe({ error: () => {} });
+  }
+
+  aplicarTemaDaConta(tema: Tema | null): void {
+    if (tema === null || tema === this.temaEscolhido()) {
+      return;
+    }
+    this.temaEscolhido.set(tema);
+    localStorage.setItem(STORAGE_KEY, tema);
     this.aplicar();
   }
 

@@ -43,6 +43,36 @@ export class AuthService {
       .pipe(tap((user) => this.currentUserSignal.set(user)));
   }
 
+  atualizarNome(name: string): Observable<User> {
+    return this.http
+      .put<User>(`${environment.apiUrl}/users/me`, { name })
+      .pipe(tap((user) => this.currentUserSignal.set(user)));
+  }
+
+  atualizarTema(tema: 'light' | 'dark'): Observable<User> {
+    return this.http
+      .put<User>(`${environment.apiUrl}/users/me/tema`, { tema })
+      .pipe(tap((user) => this.currentUserSignal.set(user)));
+  }
+
+  iniciarTrocaSenha(novaSenha: string): Observable<void> {
+    return this.http.post<void>(`${environment.apiUrl}/users/me/senha`, { novaSenha });
+  }
+
+  confirmarTrocaSenha(codigo: string): Observable<void> {
+    return this.http.post<void>(`${environment.apiUrl}/users/me/senha/confirmar`, { codigo });
+  }
+
+  reenviarCodigoTrocaSenha(): Observable<void> {
+    return this.http.post<void>(`${environment.apiUrl}/users/me/senha/reenviar`, {});
+  }
+
+  excluirConta(senha: string): Observable<void> {
+    return this.http
+      .delete<void>(`${environment.apiUrl}/users/me`, { body: { senha } })
+      .pipe(tap(() => this.limparSessaoLocal()));
+  }
+
   limparSessaoLocal(): void {
     this.currentUserSignal.set(null);
     this.periodoContext.resetar();

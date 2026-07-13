@@ -22,6 +22,10 @@ export const routes: Routes = [
       {
         path: 'premium',
         loadComponent: () => import('./features/premium/premium').then((m) => m.Premium)
+      },
+      {
+        path: 'perfil',
+        loadComponent: () => import('./features/perfil/perfil').then((m) => m.Perfil)
       }
     ]
   },
