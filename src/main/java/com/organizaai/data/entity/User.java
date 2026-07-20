@@ -66,6 +66,12 @@ public class User {
     @Column(name = "codigo_troca_senha_expira_em")
     private Instant codigoTrocaSenhaExpiraEm;
 
+    @Column(name = "codigo_recuperacao_senha")
+    private String codigoRecuperacaoSenha;
+
+    @Column(name = "codigo_recuperacao_senha_expira_em")
+    private Instant codigoRecuperacaoSenhaExpiraEm;
+
     @Column(name = "created_at", nullable = false, updatable = false)
     private Instant createdAt;
 

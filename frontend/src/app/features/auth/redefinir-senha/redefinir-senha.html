@@ -1,0 +1,47 @@
+<app-auth-layout>
+  <p class="eyebrow">Recuperar acesso</p>
+  <h1>Redefinir senha</h1>
+  <p class="hint">Digite o código enviado pro seu email e escolha uma nova senha.</p>
+
+  <form [formGroup]="form" (ngSubmit)="submit()">
+    <div class="field">
+      <label for="codigo">Código de verificação</label>
+      <input
+        id="codigo"
+        type="text"
+        inputmode="numeric"
+        maxlength="6"
+        formControlName="codigo"
+        autocomplete="one-time-code"
+        placeholder="000000"
+      />
+    </div>
+
+    <div class="field">
+      <label for="novaSenha">Nova senha</label>
+      <input id="novaSenha" type="password" formControlName="novaSenha" autocomplete="new-password" placeholder="••••••••" />
+    </div>
+
+    <div class="field">
+      <label for="confirmarSenha">Confirmar nova senha</label>
+      <input id="confirmarSenha" type="password" formControlName="confirmarSenha" autocomplete="new-password" placeholder="••••••••" />
+    </div>
+
+    @if (errorMessage()) {
+      <p class="error">{{ errorMessage() }}</p>
+    }
+
+    @if (infoMessage()) {
+      <p class="info">{{ infoMessage() }}</p>
+    }
+
+    <button type="submit" class="submit" [disabled]="form.invalid || submitting()">
+      {{ submitting() ? 'Redefinindo...' : 'Redefinir senha' }}
+    </button>
+  </form>
+
+  <p class="switch">
+    Não recebeu o código?
+    <a (click)="reenviarCodigo()">{{ reenviando() ? 'Reenviando...' : 'Reenviar código' }}</a>
+  </p>
+</app-auth-layout>

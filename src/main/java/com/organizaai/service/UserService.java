@@ -29,6 +29,7 @@ import java.time.temporal.ChronoUnit;
 public class UserService {
 
     private static final int CODIGO_EXPIRACAO_MINUTOS = 15;
+    private static final int CODIGO_RECUPERACAO_EXPIRACAO_MINUTOS = 5;
     private static final SecureRandom RANDOM = new SecureRandom();
 
     private final UserRepository userRepository;
@@ -136,6 +137,34 @@ public class UserService {
         user.setCodigoTrocaSenhaExpiraEm(Instant.now().plus(CODIGO_EXPIRACAO_MINUTOS, ChronoUnit.MINUTES));
         userRepository.save(user);
         emailService.enviarCodigoTrocaSenha(user, codigo);
+    }
+
+    public void solicitarRecuperacaoSenha(String email) {
+        userRepository.findByEmail(email).ifPresent(user -> {
+            if (!user.isEmailVerificado()) {
+                return;
+            }
+            String codigo = gerarCodigo();
+            user.setCodigoRecuperacaoSenha(codigo);
+            user.setCodigoRecuperacaoSenhaExpiraEm(Instant.now().plus(CODIGO_RECUPERACAO_EXPIRACAO_MINUTOS, ChronoUnit.MINUTES));
+            userRepository.save(user);
+            emailService.enviarCodigoRecuperacaoSenha(user, codigo);
+        });
+    }
+
+    public void redefinirSenha(String email, String codigo, String novaSenha) {
+        User user = userRepository.findByEmail(email)
+                .orElseThrow(CodigoVerificacaoInvalidoException::new);
+        boolean codigoValido = codigo != null && codigo.equals(user.getCodigoRecuperacaoSenha());
+        boolean naoExpirado = user.getCodigoRecuperacaoSenhaExpiraEm() != null
+                && Instant.now().isBefore(user.getCodigoRecuperacaoSenhaExpiraEm());
+        if (!codigoValido || !naoExpirado) {
+            throw new CodigoVerificacaoInvalidoException();
+        }
+        user.setPasswordHash(passwordEncoder.encode(novaSenha));
+        user.setCodigoRecuperacaoSenha(null);
+        user.setCodigoRecuperacaoSenhaExpiraEm(null);
+        userRepository.save(user);
     }
 
     public User atualizarTema(User user, String tema) {

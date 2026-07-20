@@ -19,9 +19,7 @@ export class Login {
   readonly errorMessage = signal<string | null>(null);
   readonly emailNaoVerificado = signal(false);
   readonly submitting = signal(false);
-  readonly infoMessage = signal<string | null>(
-    this.route.snapshot.queryParamMap.get('verificado') ? 'Email verificado! Faça login.' : null
-  );
+  readonly infoMessage = signal<string | null>(this.mensagemInicial());
 
   readonly form = this.fb.group({
     email: ['', [Validators.required, Validators.email]],
@@ -59,5 +57,16 @@ export class Login {
 
   get emailDigitado(): string {
     return this.form.getRawValue().email ?? '';
+  }
+
+  private mensagemInicial(): string | null {
+    const params = this.route.snapshot.queryParamMap;
+    if (params.get('verificado')) {
+      return 'Email verificado! Faça login.';
+    }
+    if (params.get('senhaRedefinida')) {
+      return 'Senha redefinida! Faça login com a nova senha.';
+    }
+    return null;
   }
 }

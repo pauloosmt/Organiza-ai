@@ -1,6 +1,8 @@
 package com.organizaai.controller;
 
+import com.organizaai.data.dto.request.EsqueciSenhaRequest;
 import com.organizaai.data.dto.request.LoginRequest;
+import com.organizaai.data.dto.request.RedefinirSenhaRequest;
 import com.organizaai.data.dto.request.ReenviarCodigoRequest;
 import com.organizaai.data.dto.request.RegisterRequest;
 import com.organizaai.data.dto.request.VerificarEmailRequest;
@@ -42,6 +44,18 @@ public class AuthenticationController {
     @PostMapping("/reenviar-codigo")
     public ResponseEntity<Void> reenviarCodigo(@Valid @RequestBody ReenviarCodigoRequest request) {
         userService.reenviarCodigo(request.email());
+        return ResponseEntity.noContent().build();
+    }
+
+    @PostMapping("/esqueci-senha")
+    public ResponseEntity<Void> esqueciSenha(@Valid @RequestBody EsqueciSenhaRequest request) {
+        userService.solicitarRecuperacaoSenha(request.email());
+        return ResponseEntity.noContent().build();
+    }
+
+    @PostMapping("/redefinir-senha")
+    public ResponseEntity<Void> redefinirSenha(@Valid @RequestBody RedefinirSenhaRequest request) {
+        userService.redefinirSenha(request.email(), request.codigo(), request.novaSenha());
         return ResponseEntity.noContent().build();
     }
 

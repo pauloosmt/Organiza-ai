@@ -55,7 +55,9 @@ public class SecurityConfig {
                                 "/api/auth/register",
                                 "/api/auth/login",
                                 "/api/auth/verificar-email",
-                                "/api/auth/reenviar-codigo"
+                                "/api/auth/reenviar-codigo",
+                                "/api/auth/esqueci-senha",
+                                "/api/auth/redefinir-senha"
                         ).permitAll()
                         .requestMatchers("/actuator/health").permitAll()
                         .anyRequest().authenticated()

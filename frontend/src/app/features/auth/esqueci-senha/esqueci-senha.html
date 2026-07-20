@@ -1,0 +1,22 @@
+<app-auth-layout>
+  <p class="eyebrow">Recuperar acesso</p>
+  <h1>Esqueci minha senha</h1>
+  <p class="hint">Informe o email da sua conta. Se ele existir, enviamos um código pra você redefinir a senha.</p>
+
+  <form [formGroup]="form" (ngSubmit)="submit()">
+    <div class="field">
+      <label for="email">E-mail</label>
+      <input id="email" type="email" formControlName="email" autocomplete="email" placeholder="voce@faculdade.edu.br" />
+    </div>
+
+    @if (errorMessage()) {
+      <p class="error">{{ errorMessage() }}</p>
+    }
+
+    <button type="submit" class="submit" [disabled]="form.invalid || submitting()">
+      {{ submitting() ? 'Enviando...' : 'Enviar código' }}
+    </button>
+  </form>
+
+  <p class="switch">Lembrou a senha? <a routerLink="/login">Entrar</a></p>
+</app-auth-layout>

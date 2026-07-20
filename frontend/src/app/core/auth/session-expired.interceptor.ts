@@ -8,7 +8,9 @@ const ROTAS_PUBLICAS_DE_AUTH = [
   '/auth/login',
   '/auth/register',
   '/auth/verificar-email',
-  '/auth/reenviar-codigo'
+  '/auth/reenviar-codigo',
+  '/auth/esqueci-senha',
+  '/auth/redefinir-senha'
 ];
 
 export const sessionExpiredInterceptor: HttpInterceptorFn = (req, next) => {

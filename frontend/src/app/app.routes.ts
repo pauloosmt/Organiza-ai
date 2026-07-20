@@ -41,5 +41,13 @@ export const routes: Routes = [
     path: 'verificar-email',
     loadComponent: () => import('./features/auth/verificar-email/verificar-email').then((m) => m.VerificarEmail)
   },
+  {
+    path: 'esqueci-senha',
+    loadComponent: () => import('./features/auth/esqueci-senha/esqueci-senha').then((m) => m.EsqueciSenha)
+  },
+  {
+    path: 'redefinir-senha',
+    loadComponent: () => import('./features/auth/redefinir-senha/redefinir-senha').then((m) => m.RedefinirSenha)
+  },
   { path: '**', redirectTo: '' }
 ];

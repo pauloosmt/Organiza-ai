@@ -46,6 +46,19 @@ form {
   }
 }
 
+.forgot-link {
+  align-self: flex-end;
+  font-size: 0.82rem;
+  color: var(--color-primary);
+  font-weight: 600;
+  text-decoration: none;
+  cursor: pointer;
+
+  &:hover {
+    text-decoration: underline;
+  }
+}
+
 .hint {
   color: var(--color-text-muted);
   font-size: 0.9rem;

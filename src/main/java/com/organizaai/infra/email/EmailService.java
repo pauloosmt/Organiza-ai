@@ -3,33 +3,37 @@ package com.organizaai.infra.email;
 import com.organizaai.data.entity.Avaliacao;
 import com.organizaai.data.entity.TipoAvaliacao;
 import com.organizaai.data.entity.User;
-import jakarta.mail.internet.MimeMessage;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.mail.javamail.JavaMailSender;
-import org.springframework.mail.javamail.MimeMessageHelper;
+import org.springframework.http.MediaType;
 import org.springframework.stereotype.Service;
+import org.springframework.web.client.RestClient;
 
 import java.time.format.DateTimeFormatter;
+import java.util.List;
 
 @Slf4j
 @Service
 public class EmailService {
 
+    private static final String BREVO_API_URL = "https://api.brevo.com/v3/smtp/email";
     private static final String REMETENTE_NOME = "Organiza Aí";
     private static final DateTimeFormatter FORMATO_DATA_BR = DateTimeFormatter.ofPattern("dd/MM/yyyy");
 
-    private final JavaMailSender mailSender;
+    private final RestClient restClient;
     private final String remetente;
+    private final String apiKey;
     private final String adminNotificationEmail;
 
     public EmailService(
-            JavaMailSender mailSender,
-            @Value("${spring.mail.username:}") String remetente,
+            RestClient restClient,
+            @Value("${app.email.remetente:}") String remetente,
+            @Value("${app.email.brevo-api-key:}") String apiKey,
             @Value("${app.admin.notification-email:}") String adminNotificationEmail
     ) {
-        this.mailSender = mailSender;
+        this.restClient = restClient;
         this.remetente = remetente;
+        this.apiKey = apiKey;
         this.adminNotificationEmail = adminNotificationEmail;
     }
 
@@ -57,6 +61,20 @@ public class EmailService {
                 + "<p style=\"margin-top: 24px; font-size: 13px; color:#6b6260;\">Se você não pediu essa troca de "
                 + "senha, pode ignorar este email — sua senha continua a mesma.</p>";
         enviar(destinatario.getEmail(), "Confirme a troca de senha - Organiza Aí", montarHtml(corpo, true));
+    }
+
+    public void enviarCodigoRecuperacaoSenha(User destinatario, String codigo) {
+        String corpo = "<p>Olá, <strong>" + destinatario.getName() + "</strong>!</p>"
+                + "<p>Use o código abaixo para redefinir sua senha:</p>"
+                + "<div style=\"text-align:center; margin: 28px 0;\">"
+                + "<span style=\"display:inline-block; font-family: 'Courier New', monospace; font-size: 32px; "
+                + "font-weight: 700; letter-spacing: 8px; color:#b3131e; background:#fbf9f8; "
+                + "border: 1px solid #e6e1de; border-radius: 10px; padding: 14px 20px;\">" + codigo + "</span>"
+                + "</div>"
+                + "<p>Esse código expira em <strong>5 minutos</strong>.</p>"
+                + "<p style=\"margin-top: 24px; font-size: 13px; color:#6b6260;\">Se você não pediu essa "
+                + "redefinição de senha, pode ignorar este email — sua senha continua a mesma.</p>";
+        enviar(destinatario.getEmail(), "Redefinir senha - Organiza Aí", montarHtml(corpo, true));
     }
 
     public void enviarLembreteAvaliacao(User destinatario, Avaliacao avaliacao, String disciplinaNome) {
@@ -106,20 +124,35 @@ public class EmailService {
     }
 
     private void enviar(String destinatario, String assunto, String corpoHtml) {
-        if (remetente.isBlank()) {
-            log.warn("MAIL_USERNAME não configurado, pulando envio de email para {}.", destinatario);
+        if (remetente.isBlank() || apiKey.isBlank()) {
+            log.warn("Email não configurado (remetente/API key da Brevo ausente), pulando envio para {}.", destinatario);
             return;
         }
         try {
-            MimeMessage mimeMessage = mailSender.createMimeMessage();
-            MimeMessageHelper helper = new MimeMessageHelper(mimeMessage, "UTF-8");
-            helper.setFrom(remetente, REMETENTE_NOME);
-            helper.setTo(destinatario);
-            helper.setSubject(assunto);
-            helper.setText(corpoHtml, true);
-            mailSender.send(mimeMessage);
+            BrevoEmailRequest body = new BrevoEmailRequest(
+                    new BrevoRemetente(REMETENTE_NOME, remetente),
+                    List.of(new BrevoContato(destinatario)),
+                    assunto,
+                    corpoHtml
+            );
+            restClient.post()
+                    .uri(BREVO_API_URL)
+                    .header("api-key", apiKey)
+                    .contentType(MediaType.APPLICATION_JSON)
+                    .body(body)
+                    .retrieve()
+                    .toBodilessEntity();
         } catch (Exception ex) {
             log.warn("Falha ao enviar email para {}: {}", destinatario, ex.getMessage());
         }
+    }
+
+    private record BrevoRemetente(String name, String email) {
+    }
+
+    private record BrevoContato(String email) {
+    }
+
+    private record BrevoEmailRequest(BrevoRemetente sender, List<BrevoContato> to, String subject, String htmlContent) {
     }
 }

@@ -25,6 +25,14 @@ export class AuthService {
     return this.http.post<void>(`${environment.apiUrl}/auth/reenviar-codigo`, { email });
   }
 
+  esqueciSenha(email: string): Observable<void> {
+    return this.http.post<void>(`${environment.apiUrl}/auth/esqueci-senha`, { email });
+  }
+
+  redefinirSenha(email: string, codigo: string, novaSenha: string): Observable<void> {
+    return this.http.post<void>(`${environment.apiUrl}/auth/redefinir-senha`, { email, codigo, novaSenha });
+  }
+
   login(email: string, password: string): Observable<User> {
     return this.http
       .post<User>(`${environment.apiUrl}/auth/login`, { email, password })
