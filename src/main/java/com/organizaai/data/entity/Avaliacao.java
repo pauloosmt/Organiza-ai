@@ -38,7 +38,7 @@ public class Avaliacao {
     @Column(nullable = false)
     private String titulo;
 
-    @Column(nullable = false, length = 8)
+    @Column(nullable = false, length = 11)
     @Enumerated(EnumType.STRING)
     private TipoAvaliacao tipo;
 
