@@ -1,0 +1,48 @@
+<div class="avaliacoes-page">
+  <header class="page-header">
+    <h1>Avaliações</h1>
+    @if (periodoContext.periodoAtual(); as periodo) {
+      <span class="badge">{{ periodo.nome }}</span>
+    }
+  </header>
+
+  @if (disciplinas().length > 0) {
+    <section class="nova-avaliacao">
+      <h2>Nova avaliação</h2>
+      <select (change)="selecionarDisciplina($any($event.target).value)">
+        <option value="">Selecione a disciplina...</option>
+        @for (disciplina of disciplinas(); track disciplina.id) {
+          <option [value]="disciplina.id">{{ disciplina.nome }}</option>
+        }
+      </select>
+
+      @if (disciplinaSelecionadaId(); as disciplinaId) {
+        <app-avaliacao-form [disciplinaId]="disciplinaId" (criada)="aoCadastrarAvaliacao($event)" />
+      }
+    </section>
+  } @else {
+    <div class="empty-state">
+      <p>Nenhuma disciplina cadastrada ainda.</p>
+      <p class="hint">Cadastre uma disciplina primeiro pra poder marcar uma avaliação.</p>
+    </div>
+  }
+
+  <section class="lista-avaliacoes">
+    <h2>Avaliações do período</h2>
+    @if (avaliacoesOrdenadas().length > 0) {
+      <ul class="avaliacoes-lista">
+        @for (avaliacao of avaliacoesOrdenadas(); track avaliacao.id) {
+          <li
+            app-avaliacao-linha
+            [avaliacao]="avaliacao"
+            [mostrarDisciplina]="true"
+            (atualizada)="aoAtualizarAvaliacao($event)"
+            (removida)="aoRemoverAvaliacao($event)"
+          ></li>
+        }
+      </ul>
+    } @else {
+      <p class="hint">Nenhuma avaliação cadastrada ainda.</p>
+    }
+  </section>
+</div>

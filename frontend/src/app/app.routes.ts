@@ -16,6 +16,10 @@ export const routes: Routes = [
         loadComponent: () => import('./features/disciplinas/disciplinas').then((m) => m.Disciplinas)
       },
       {
+        path: 'avaliacoes',
+        loadComponent: () => import('./features/avaliacoes/avaliacoes-page/avaliacoes-page').then((m) => m.AvaliacoesPage)
+      },
+      {
         path: 'grade',
         loadComponent: () => import('./features/grade/grade-board').then((m) => m.GradeBoard)
       },
