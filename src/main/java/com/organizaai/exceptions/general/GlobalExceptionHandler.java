@@ -8,6 +8,7 @@ import com.organizaai.exceptions.entity.EmailAlreadyExistsException;
 import com.organizaai.exceptions.entity.FaltasNegativasException;
 import com.organizaai.exceptions.entity.GradeBlocoNotFoundException;
 import com.organizaai.exceptions.entity.HorarioSobrepostoException;
+import com.organizaai.exceptions.entity.NotaExcedePontuacaoException;
 import com.organizaai.exceptions.entity.PeriodoJaExisteException;
 import com.organizaai.exceptions.entity.PeriodoNotFoundException;
 import com.organizaai.exceptions.entity.SenhaAtualInvalidaException;
@@ -53,6 +54,11 @@ public class GlobalExceptionHandler {
 
     @ExceptionHandler(ConfigPeriodoInvalidaException.class)
     public ResponseEntity<Map<String, Object>> handleConfigPeriodoInvalida(ConfigPeriodoInvalidaException ex) {
+        return buildResponse(HttpStatus.BAD_REQUEST, ex.getMessage());
+    }
+
+    @ExceptionHandler(NotaExcedePontuacaoException.class)
+    public ResponseEntity<Map<String, Object>> handleNotaExcedePontuacao(NotaExcedePontuacaoException ex) {
         return buildResponse(HttpStatus.BAD_REQUEST, ex.getMessage());
     }
 

@@ -6,6 +6,7 @@ import com.organizaai.data.dto.response.AvaliacaoResponse;
 import com.organizaai.data.entity.Avaliacao;
 import com.organizaai.data.entity.Disciplina;
 import com.organizaai.exceptions.entity.AvaliacaoNotFoundException;
+import com.organizaai.exceptions.entity.NotaExcedePontuacaoException;
 import com.organizaai.repository.AvaliacaoRepository;
 import com.organizaai.repository.DisciplinaRepository;
 import lombok.RequiredArgsConstructor;
@@ -46,6 +47,9 @@ public class AvaliacaoService {
     }
 
     public Avaliacao update(UUID userId, UUID avaliacaoId, UpdateAvaliacaoRequest request) {
+        if (request.nota() != null && request.nota() > request.pontuacao()) {
+            throw new NotaExcedePontuacaoException(request.pontuacao());
+        }
         Avaliacao avaliacao = getOwned(userId, avaliacaoId);
         avaliacao.setTitulo(request.titulo());
         avaliacao.setTipo(request.tipo());
