@@ -7,7 +7,7 @@
     "build": "ng build",
     "watch": "ng build --watch --configuration development",
     "test": "ng test",
-    "verify:security": "node scripts/check-no-secrets.js && node scripts/check-storage-usage.js"
+    "verify:security": "node scripts/check-no-secrets.js && node scripts/check-storage-usage.js && node scripts/check-no-auth-header.js && node scripts/check-no-token-in-url.js"
   },
   "private": true,
   "packageManager": "npm@11.16.0",
