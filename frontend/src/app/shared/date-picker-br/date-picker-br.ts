@@ -15,6 +15,10 @@ const NOMES_MES = [
 
 const NOMES_DIA_SEMANA = ['D', 'S', 'T', 'Q', 'Q', 'S', 'S'];
 
+const DROPDOWN_LARGURA = 260;
+const DROPDOWN_ALTURA_ESTIMADA = 320;
+const MARGEM_VIEWPORT = 8;
+
 @Component({
   selector: 'app-date-picker-br',
   imports: [],
@@ -34,6 +38,7 @@ export class DatePickerBr implements ControlValueAccessor {
   readonly aberto = signal(false);
   readonly valorIso = signal<string | null>(null);
   readonly desabilitado = signal(false);
+  readonly dropdownPosition = signal<{ top: number; left: number } | null>(null);
 
   private readonly hoje = new Date();
   readonly anoExibido = signal(this.hoje.getFullYear());
@@ -104,6 +109,18 @@ export class DatePickerBr implements ControlValueAccessor {
     }
     this.aberto.update((a) => !a);
     if (this.aberto()) {
+      const rect = this.elementRef.nativeElement.querySelector('.campo')!.getBoundingClientRect();
+
+      let left = rect.left;
+      left = Math.min(left, window.innerWidth - DROPDOWN_LARGURA - MARGEM_VIEWPORT);
+      left = Math.max(left, MARGEM_VIEWPORT);
+
+      let top = rect.bottom + 6;
+      if (top + DROPDOWN_ALTURA_ESTIMADA > window.innerHeight) {
+        top = Math.max(rect.top - DROPDOWN_ALTURA_ESTIMADA - 6, MARGEM_VIEWPORT);
+      }
+
+      this.dropdownPosition.set({ top, left });
       this.onTouched();
     }
   }

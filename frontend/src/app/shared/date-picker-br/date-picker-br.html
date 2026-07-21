@@ -4,7 +4,7 @@
   </button>
 
   @if (aberto()) {
-    <div class="dropdown">
+    <div class="dropdown" [style.top.px]="dropdownPosition()?.top" [style.left.px]="dropdownPosition()?.left">
       <div class="cabecalho">
         <button type="button" (click)="mesAnterior()" aria-label="Mês anterior">‹</button>
         <span class="nome-mes">{{ nomeMesExibido() }}</span>
