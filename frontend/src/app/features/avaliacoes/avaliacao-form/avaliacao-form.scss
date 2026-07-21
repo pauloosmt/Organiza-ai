@@ -1,0 +1,72 @@
+form {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+
+  input,
+  select {
+    padding: 0.55rem 0.75rem;
+    border-radius: var(--radius-sm);
+    border: 1px solid var(--color-border);
+    background: var(--color-background);
+    color: var(--color-text);
+    font-size: 0.95rem;
+
+    &:focus-visible {
+      outline: 2px solid var(--color-primary);
+      outline-offset: 1px;
+    }
+  }
+
+  .linha-form {
+    display: flex;
+    gap: 0.5rem;
+
+    select {
+      flex: 1;
+      min-width: 0;
+    }
+
+    app-date-picker-br {
+      flex: 1.3;
+      min-width: 0;
+    }
+
+    input[type='number'] {
+      flex: 0.8;
+      min-width: 0;
+    }
+  }
+
+  .error {
+    color: var(--color-danger);
+    margin: 0;
+  }
+
+  button[type='submit'] {
+    padding: 0.6rem 1rem;
+    border: none;
+    border-radius: var(--radius-sm);
+    background: var(--color-primary);
+    color: var(--color-on-primary);
+    font-weight: 700;
+    cursor: pointer;
+
+    &:disabled {
+      opacity: 0.6;
+      cursor: not-allowed;
+    }
+  }
+}
+
+@media (max-width: 480px) {
+  .linha-form {
+    flex-wrap: wrap;
+
+    select,
+    app-date-picker-br,
+    input[type='number'] {
+      flex-basis: 100%;
+    }
+  }
+}

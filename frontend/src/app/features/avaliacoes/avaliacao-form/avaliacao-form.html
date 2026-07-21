@@ -1,0 +1,16 @@
+<form [formGroup]="form" (ngSubmit)="cadastrar()">
+  <input type="text" formControlName="titulo" placeholder="Título (ex: Prova 1)" />
+  <div class="linha-form">
+    <select formControlName="tipo">
+      <option value="PROVA">Prova</option>
+      <option value="TRABALHO">Trabalho</option>
+      <option value="RECUPERACAO">Recuperação</option>
+    </select>
+    <app-date-picker-br formControlName="data" />
+    <input type="number" step="1" min="1" formControlName="pontuacao" placeholder="Pontuação" />
+  </div>
+  @if (erro()) {
+    <p class="error">{{ erro() }}</p>
+  }
+  <button type="submit" [disabled]="form.invalid">Adicionar avaliação</button>
+</form>
