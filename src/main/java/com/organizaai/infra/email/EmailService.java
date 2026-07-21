@@ -169,9 +169,9 @@ public class EmailService {
     }
 
     private String montarMensagemRaw(String destinatario, String assunto, String corpoHtml) {
-        String assuntoCodificado = "=?UTF-8?B?"
-                + Base64.getEncoder().encodeToString(assunto.getBytes(StandardCharsets.UTF_8)) + "?=";
-        return "From: " + REMETENTE_NOME + " <" + remetente + ">\r\n"
+        String assuntoCodificado = codificarPalavraMime(assunto);
+        String remetenteNomeCodificado = codificarPalavraMime(REMETENTE_NOME);
+        return "From: " + remetenteNomeCodificado + " <" + remetente + ">\r\n"
                 + "To: " + destinatario + "\r\n"
                 + "Subject: " + assuntoCodificado + "\r\n"
                 + "MIME-Version: 1.0\r\n"
@@ -179,6 +179,10 @@ public class EmailService {
                 + "Content-Transfer-Encoding: 8bit\r\n"
                 + "\r\n"
                 + corpoHtml;
+    }
+
+    private String codificarPalavraMime(String texto) {
+        return "=?UTF-8?B?" + Base64.getEncoder().encodeToString(texto.getBytes(StandardCharsets.UTF_8)) + "?=";
     }
 
     private record GmailTokenResponse(@JsonProperty("access_token") String accessToken) {
