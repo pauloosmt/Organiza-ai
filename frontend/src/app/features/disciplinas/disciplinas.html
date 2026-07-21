@@ -81,54 +81,19 @@
         @if (avaliacoesDaDisciplina().length > 0) {
           <ul class="avaliacoes-lista">
             @for (avaliacao of avaliacoesDaDisciplina(); track avaliacao.id) {
-              <li>
-                <div class="avaliacao-info">
-                  <span
-                    class="tipo"
-                    [class.trabalho]="avaliacao.tipo === 'TRABALHO'"
-                    [class.recuperacao]="avaliacao.tipo === 'RECUPERACAO'"
-                  >{{ avaliacao.tipo === 'PROVA' ? 'Prova' : avaliacao.tipo === 'TRABALHO' ? 'Trabalho' : 'Recuperação' }}</span>
-                  <span class="titulo">{{ avaliacao.titulo }}</span>
-                  <span class="data">{{ formatarDataBr(avaliacao.data) }}</span>
-                  <span class="pontuacao">vale {{ avaliacao.pontuacao }}</span>
-                </div>
-                <div class="avaliacao-nota">
-                  <label>
-                    Nota
-                    <input
-                      type="number"
-                      step="0.1"
-                      min="0"
-                      [value]="avaliacao.nota ?? ''"
-                      (change)="atualizarNota(avaliacao, $any($event.target).value)"
-                      placeholder="—"
-                    />
-                  </label>
-                  <button type="button" class="remover" (click)="removerAvaliacao(avaliacao)">Remover</button>
-                </div>
-              </li>
+              <li
+                app-avaliacao-linha
+                [avaliacao]="avaliacao"
+                (atualizada)="aoAtualizarAvaliacao($event)"
+                (removida)="aoRemoverAvaliacao($event)"
+              ></li>
             }
           </ul>
         } @else {
           <p class="hint">Nenhuma avaliação cadastrada ainda.</p>
         }
 
-        <form class="avaliacao-form" [formGroup]="avaliacaoForm" (ngSubmit)="cadastrarAvaliacao()">
-          <input type="text" formControlName="titulo" placeholder="Título (ex: Prova 1)" />
-          <div class="linha-form">
-            <select formControlName="tipo">
-              <option value="PROVA">Prova</option>
-              <option value="TRABALHO">Trabalho</option>
-              <option value="RECUPERACAO">Recuperação</option>
-            </select>
-            <app-date-picker-br formControlName="data" />
-            <input type="number" step="1" min="1" formControlName="pontuacao" placeholder="Pontuação" />
-          </div>
-          @if (avaliacaoErrorMessage()) {
-            <p class="error">{{ avaliacaoErrorMessage() }}</p>
-          }
-          <button type="submit" [disabled]="avaliacaoForm.invalid">Adicionar avaliação</button>
-        </form>
+        <app-avaliacao-form class="avaliacao-form" [disciplinaId]="disciplina.id" (criada)="aoCadastrarAvaliacao($event)" />
 
         <button type="button" class="cancelar" (click)="fecharPainel()">Fechar</button>
       </div>

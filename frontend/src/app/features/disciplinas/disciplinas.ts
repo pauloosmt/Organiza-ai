@@ -2,8 +2,8 @@ import { Component, OnInit, computed, effect, inject, signal } from '@angular/co
 import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
 import { PeriodoContextService } from '../../core/periodo/periodo-context.service';
 import { tagColorVar } from '../../core/theme/tag-color';
-import { formatarDataBr } from '../../core/utils/data-br';
-import { DatePickerBr } from '../../shared/date-picker-br/date-picker-br';
+import { AvaliacaoForm } from '../avaliacoes/avaliacao-form/avaliacao-form';
+import { AvaliacaoLinha } from '../avaliacoes/avaliacao-linha/avaliacao-linha';
 import { Avaliacao } from '../avaliacoes/avaliacao.model';
 import { AvaliacoesService } from '../avaliacoes/avaliacoes.service';
 import { Disciplina } from './disciplina.model';
@@ -13,7 +13,7 @@ import { ResultadoMedia, calcularMedia } from './media.util';
 
 @Component({
   selector: 'app-disciplinas',
-  imports: [ReactiveFormsModule, DatePickerBr],
+  imports: [ReactiveFormsModule, AvaliacaoForm, AvaliacaoLinha],
   templateUrl: './disciplinas.html',
   styleUrl: './disciplinas.scss'
 })
@@ -28,7 +28,6 @@ export class Disciplinas implements OnInit {
   readonly errorMessage = signal<string | null>(null);
 
   readonly disciplinaSelecionada = signal<Disciplina | null>(null);
-  readonly avaliacaoErrorMessage = signal<string | null>(null);
 
   readonly avaliacoesDaDisciplina = computed(() => {
     const disciplina = this.disciplinaSelecionada();
@@ -44,15 +43,7 @@ export class Disciplinas implements OnInit {
     nome: ['', [Validators.required]]
   });
 
-  readonly avaliacaoForm = this.fb.group({
-    titulo: ['', [Validators.required]],
-    tipo: ['PROVA' as 'PROVA' | 'TRABALHO' | 'RECUPERACAO', [Validators.required]],
-    data: ['', [Validators.required]],
-    pontuacao: [10, [Validators.required, Validators.min(1)]]
-  });
-
   readonly tagColorVar = tagColorVar;
-  readonly formatarDataBr = formatarDataBr;
   readonly limiteFaltas = limiteFaltas;
   readonly atingiuLimiteFaltas = atingiuLimiteFaltas;
 
@@ -119,58 +110,22 @@ export class Disciplinas implements OnInit {
 
   abrirPainel(disciplina: Disciplina): void {
     this.disciplinaSelecionada.set(disciplina);
-    this.avaliacaoErrorMessage.set(null);
-    this.avaliacaoForm.reset({ titulo: '', tipo: 'PROVA', data: '', pontuacao: 10 });
   }
 
   fecharPainel(): void {
     this.disciplinaSelecionada.set(null);
   }
 
-  cadastrarAvaliacao(): void {
-    const disciplina = this.disciplinaSelecionada();
-    if (this.avaliacaoForm.invalid || !disciplina) {
-      return;
-    }
-    const valores = this.avaliacaoForm.getRawValue();
-    this.avaliacoesService.create({
-      disciplinaId: disciplina.id,
-      titulo: valores.titulo!,
-      tipo: valores.tipo!,
-      data: valores.data!,
-      pontuacao: valores.pontuacao!
-    }).subscribe({
-      next: (avaliacao) => {
-        this.avaliacoes.update((atual) => [...atual, avaliacao]);
-        this.avaliacaoForm.reset({ titulo: '', tipo: 'PROVA', data: '', pontuacao: 10 });
-      },
-      error: () => this.avaliacaoErrorMessage.set('Não foi possível cadastrar a avaliação.')
-    });
+  aoCadastrarAvaliacao(avaliacao: Avaliacao): void {
+    this.avaliacoes.update((atual) => [...atual, avaliacao]);
   }
 
-  atualizarNota(avaliacao: Avaliacao, notaTexto: string): void {
-    const nota = notaTexto.trim() === '' ? null : Number(notaTexto);
-    if (nota !== null && Number.isNaN(nota)) {
-      return;
-    }
-    this.avaliacoesService.update(avaliacao.id, {
-      titulo: avaliacao.titulo,
-      tipo: avaliacao.tipo,
-      data: avaliacao.data,
-      pontuacao: avaliacao.pontuacao,
-      nota
-    }).subscribe({
-      next: (atualizada) => {
-        this.avaliacoes.update((atual) => atual.map((a) => (a.id === atualizada.id ? atualizada : a)));
-      },
-      error: () => this.avaliacaoErrorMessage.set('Não foi possível salvar a nota.')
-    });
+  aoAtualizarAvaliacao(avaliacao: Avaliacao): void {
+    this.avaliacoes.update((atual) => atual.map((a) => (a.id === avaliacao.id ? avaliacao : a)));
   }
 
-  removerAvaliacao(avaliacao: Avaliacao): void {
-    this.avaliacoesService.remove(avaliacao.id).subscribe(() => {
-      this.avaliacoes.update((atual) => atual.filter((a) => a.id !== avaliacao.id));
-    });
+  aoRemoverAvaliacao(avaliacao: Avaliacao): void {
+    this.avaliacoes.update((atual) => atual.filter((a) => a.id !== avaliacao.id));
   }
 
   mediaDaDisciplina(disciplina: Disciplina): ResultadoMedia | null {
