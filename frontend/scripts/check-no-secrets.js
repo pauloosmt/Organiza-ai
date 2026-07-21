@@ -4,7 +4,7 @@
 const fs = require('fs');
 const path = require('path');
 
-const ALLOWED_KEYS = new Set(['apiUrl']);
+const ALLOWED_KEYS = new Set(['apiUrl', 'healthUrl']);
 const SECRET_LIKE = /secret|password|senha|token|private|apikey|api_key/i;
 const ENV_DIR = path.resolve(__dirname, '..', 'src', 'environments');
 
