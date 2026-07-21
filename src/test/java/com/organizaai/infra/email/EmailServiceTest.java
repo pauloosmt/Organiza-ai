@@ -20,14 +20,14 @@ class EmailServiceTest {
 
     private RestClient restClient;
 
-    private EmailService criarEmailService(String remetente, String apiKey, String adminEmail) {
+    private EmailService criarEmailService(String remetente, String clientId, String clientSecret, String refreshToken, String adminEmail) {
         restClient = Mockito.mock(RestClient.class, Mockito.RETURNS_DEEP_STUBS);
-        return new EmailService(restClient, remetente, apiKey, adminEmail);
+        return new EmailService(restClient, remetente, clientId, clientSecret, refreshToken, adminEmail);
     }
 
     @Test
     void naoEnviaQuandoRemetenteNaoConfigurado() {
-        EmailService emailService = criarEmailService("", "chave-api", "admin@example.com");
+        EmailService emailService = criarEmailService("", "client-id", "client-secret", "refresh-token", "admin@example.com");
         User destinatario = new User("Usuario", "usuario@example.com", "hash");
 
         assertDoesNotThrow(() -> emailService.enviarCodigoVerificacao(destinatario, "123456"));
@@ -36,8 +36,8 @@ class EmailServiceTest {
     }
 
     @Test
-    void naoEnviaQuandoApiKeyNaoConfigurada() {
-        EmailService emailService = criarEmailService("remetente@example.com", "", "admin@example.com");
+    void naoEnviaQuandoCredenciaisGmailNaoConfiguradas() {
+        EmailService emailService = criarEmailService("remetente@example.com", "", "", "", "admin@example.com");
         User destinatario = new User("Usuario", "usuario@example.com", "hash");
 
         assertDoesNotThrow(() -> emailService.enviarCodigoVerificacao(destinatario, "123456"));
@@ -47,7 +47,8 @@ class EmailServiceTest {
 
     @Test
     void falhaNoEnvioNaoPropagaParaOChamador() {
-        EmailService emailService = criarEmailService("remetente@example.com", "chave-api", "admin@example.com");
+        EmailService emailService = criarEmailService(
+                "remetente@example.com", "client-id", "client-secret", "refresh-token", "admin@example.com");
         User destinatario = new User("Usuario", "usuario@example.com", "hash");
         when(restClient.post()).thenThrow(new RuntimeException("falha simulada"));
 

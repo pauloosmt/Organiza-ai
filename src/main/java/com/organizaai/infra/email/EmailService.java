@@ -1,5 +1,6 @@
 package com.organizaai.infra.email;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
 import com.organizaai.data.entity.Avaliacao;
 import com.organizaai.data.entity.TipoAvaliacao;
 import com.organizaai.data.entity.User;
@@ -9,31 +10,39 @@ import org.springframework.http.MediaType;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestClient;
 
+import java.nio.charset.StandardCharsets;
 import java.time.format.DateTimeFormatter;
-import java.util.List;
+import java.util.Base64;
 
 @Slf4j
 @Service
 public class EmailService {
 
-    private static final String BREVO_API_URL = "https://api.brevo.com/v3/smtp/email";
+    private static final String GMAIL_TOKEN_URL = "https://oauth2.googleapis.com/token";
+    private static final String GMAIL_SEND_URL = "https://gmail.googleapis.com/gmail/v1/users/me/messages/send";
     private static final String REMETENTE_NOME = "Organiza Aí";
     private static final DateTimeFormatter FORMATO_DATA_BR = DateTimeFormatter.ofPattern("dd/MM/yyyy");
 
     private final RestClient restClient;
     private final String remetente;
-    private final String apiKey;
+    private final String clientId;
+    private final String clientSecret;
+    private final String refreshToken;
     private final String adminNotificationEmail;
 
     public EmailService(
             RestClient restClient,
             @Value("${app.email.remetente:}") String remetente,
-            @Value("${app.email.brevo-api-key:}") String apiKey,
+            @Value("${app.email.gmail-client-id:}") String clientId,
+            @Value("${app.email.gmail-client-secret:}") String clientSecret,
+            @Value("${app.email.gmail-refresh-token:}") String refreshToken,
             @Value("${app.admin.notification-email:}") String adminNotificationEmail
     ) {
         this.restClient = restClient;
         this.remetente = remetente;
-        this.apiKey = apiKey;
+        this.clientId = clientId;
+        this.clientSecret = clientSecret;
+        this.refreshToken = refreshToken;
         this.adminNotificationEmail = adminNotificationEmail;
     }
 
@@ -124,22 +133,20 @@ public class EmailService {
     }
 
     private void enviar(String destinatario, String assunto, String corpoHtml) {
-        if (remetente.isBlank() || apiKey.isBlank()) {
-            log.warn("Email não configurado (remetente/API key da Brevo ausente), pulando envio para {}.", destinatario);
+        if (remetente.isBlank() || clientId.isBlank() || clientSecret.isBlank() || refreshToken.isBlank()) {
+            log.warn("Gmail API não configurada, pulando envio de email para {}.", destinatario);
             return;
         }
         try {
-            BrevoEmailRequest body = new BrevoEmailRequest(
-                    new BrevoRemetente(REMETENTE_NOME, remetente),
-                    List.of(new BrevoContato(destinatario)),
-                    assunto,
-                    corpoHtml
-            );
+            String accessToken = obterAccessToken();
+            String mensagemRaw = montarMensagemRaw(destinatario, assunto, corpoHtml);
+            String raw = Base64.getUrlEncoder().withoutPadding().encodeToString(mensagemRaw.getBytes(StandardCharsets.UTF_8));
+
             restClient.post()
-                    .uri(BREVO_API_URL)
-                    .header("api-key", apiKey)
+                    .uri(GMAIL_SEND_URL)
+                    .header("Authorization", "Bearer " + accessToken)
                     .contentType(MediaType.APPLICATION_JSON)
-                    .body(body)
+                    .body(new GmailSendRequest(raw))
                     .retrieve()
                     .toBodilessEntity();
         } catch (Exception ex) {
@@ -147,12 +154,36 @@ public class EmailService {
         }
     }
 
-    private record BrevoRemetente(String name, String email) {
+    private String obterAccessToken() {
+        String corpo = "client_id=" + clientId
+                + "&client_secret=" + clientSecret
+                + "&refresh_token=" + refreshToken
+                + "&grant_type=refresh_token";
+        GmailTokenResponse resposta = restClient.post()
+                .uri(GMAIL_TOKEN_URL)
+                .contentType(MediaType.APPLICATION_FORM_URLENCODED)
+                .body(corpo)
+                .retrieve()
+                .body(GmailTokenResponse.class);
+        return resposta.accessToken();
     }
 
-    private record BrevoContato(String email) {
+    private String montarMensagemRaw(String destinatario, String assunto, String corpoHtml) {
+        String assuntoCodificado = "=?UTF-8?B?"
+                + Base64.getEncoder().encodeToString(assunto.getBytes(StandardCharsets.UTF_8)) + "?=";
+        return "From: " + REMETENTE_NOME + " <" + remetente + ">\r\n"
+                + "To: " + destinatario + "\r\n"
+                + "Subject: " + assuntoCodificado + "\r\n"
+                + "MIME-Version: 1.0\r\n"
+                + "Content-Type: text/html; charset=UTF-8\r\n"
+                + "Content-Transfer-Encoding: 8bit\r\n"
+                + "\r\n"
+                + corpoHtml;
     }
 
-    private record BrevoEmailRequest(BrevoRemetente sender, List<BrevoContato> to, String subject, String htmlContent) {
+    private record GmailTokenResponse(@JsonProperty("access_token") String accessToken) {
+    }
+
+    private record GmailSendRequest(String raw) {
     }
 }
