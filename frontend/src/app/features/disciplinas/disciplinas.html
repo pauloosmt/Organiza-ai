@@ -3,6 +3,7 @@
     <h1>Disciplinas</h1>
     @if (periodoContext.periodoAtual(); as periodo) {
       <span class="badge">{{ periodo.nome }}</span>
+      <button type="button" class="config-link" (click)="abrirConfigPopup()">Configurar médias</button>
     }
   </header>
 
@@ -22,6 +23,7 @@
         <span class="col-nome">Nome</span>
         <span class="col-creditos">Créditos</span>
         <span class="col-faltas">Faltas</span>
+        <span class="col-media">Média</span>
         <span class="col-acoes"></span>
       </li>
       @for (disciplina of disciplinas(); track disciplina.id) {
@@ -37,6 +39,13 @@
             <button type="button" class="stepper" (click)="ajustarFaltas(disciplina, -1)" [disabled]="disciplina.faltas === 0" aria-label="Diminuir falta">−</button>
             <span class="valor" [class.limite-atingido]="atingiuLimiteFaltas(disciplina)">{{ disciplina.faltas }} / {{ limiteFaltas(disciplina) }}</span>
             <button type="button" class="stepper" (click)="ajustarFaltas(disciplina, 1)" aria-label="Adicionar falta">+</button>
+          </span>
+          <span class="col-media">
+            @if (mediaDaDisciplina(disciplina); as media) {
+              <span class="media-badge" [class.aprovado]="media.estado === 'APROVADO'" [class.recuperacao]="media.estado === 'RECUPERACAO'" [class.reprovado]="media.estado === 'REPROVADO'">
+                {{ media.estado === 'APROVADO' ? 'Aprovado' : media.estado === 'RECUPERACAO' ? 'Recuperação' : 'Reprovado' }}
+              </span>
+            }
           </span>
           <span class="col-acoes" (click)="$event.stopPropagation()">
             <button type="button" class="remover" (click)="remover(disciplina)">Remover</button>
@@ -57,12 +66,28 @@
         <h2>{{ disciplina.nome }}</h2>
         <p class="subtitulo">Provas e trabalhos</p>
 
+        @if (mediaDaDisciplinaSelecionada(); as media) {
+          <div class="media-resumo">
+            <span>Média atual: <strong>{{ media.mediaAtual }}</strong> / {{ periodoContext.periodoAtual()?.escalaTotal }}</span>
+            <span class="media-badge" [class.aprovado]="media.estado === 'APROVADO'" [class.recuperacao]="media.estado === 'RECUPERACAO'" [class.reprovado]="media.estado === 'REPROVADO'">
+              {{ media.estado === 'APROVADO' ? 'Aprovado' : media.estado === 'RECUPERACAO' ? 'Precisa de recuperação' : 'Reprovado' }}
+            </span>
+            @if (media.mediaFinal !== null) {
+              <span>Média final (com recuperação): <strong>{{ media.mediaFinal }}</strong></span>
+            }
+          </div>
+        }
+
         @if (avaliacoesDaDisciplina().length > 0) {
           <ul class="avaliacoes-lista">
             @for (avaliacao of avaliacoesDaDisciplina(); track avaliacao.id) {
               <li>
                 <div class="avaliacao-info">
-                  <span class="tipo" [class.trabalho]="avaliacao.tipo === 'TRABALHO'">{{ avaliacao.tipo === 'PROVA' ? 'Prova' : 'Trabalho' }}</span>
+                  <span
+                    class="tipo"
+                    [class.trabalho]="avaliacao.tipo === 'TRABALHO'"
+                    [class.recuperacao]="avaliacao.tipo === 'RECUPERACAO'"
+                  >{{ avaliacao.tipo === 'PROVA' ? 'Prova' : avaliacao.tipo === 'TRABALHO' ? 'Trabalho' : 'Recuperação' }}</span>
                   <span class="titulo">{{ avaliacao.titulo }}</span>
                   <span class="data">{{ formatarDataBr(avaliacao.data) }}</span>
                   <span class="pontuacao">vale {{ avaliacao.pontuacao }}</span>
@@ -94,6 +119,7 @@
             <select formControlName="tipo">
               <option value="PROVA">Prova</option>
               <option value="TRABALHO">Trabalho</option>
+              <option value="RECUPERACAO">Recuperação</option>
             </select>
             <app-date-picker-br formControlName="data" />
             <input type="number" step="1" min="1" formControlName="pontuacao" placeholder="Pontuação" />
@@ -105,6 +131,40 @@
         </form>
 
         <button type="button" class="cancelar" (click)="fecharPainel()">Fechar</button>
+      </div>
+    </div>
+  }
+
+  @if (configPopupAberto()) {
+    <div class="popup-overlay" (click)="fecharConfigPopup()">
+      <div class="popup" (click)="$event.stopPropagation()">
+        <h2>Configurar médias</h2>
+        <p class="subtitulo">Vale pra todas as disciplinas deste período.</p>
+
+        <form class="config-form" [formGroup]="configForm" (ngSubmit)="salvarConfig()">
+          <label>
+            Escala total
+            <input type="number" step="0.1" min="0" formControlName="escalaTotal" />
+          </label>
+          <label>
+            Média mínima pra passar
+            <input type="number" step="0.1" min="0" formControlName="mediaMinimaPassar" />
+          </label>
+          <label>
+            Média mínima pra recuperação
+            <input type="number" step="0.1" min="0" formControlName="mediaMinimaRecuperacao" />
+          </label>
+
+          @if (configErro()) {
+            <p class="error">{{ configErro() }}</p>
+          }
+
+          <button type="submit" [disabled]="configForm.invalid || configSalvando()">
+            {{ configSalvando() ? 'Salvando...' : 'Salvar' }}
+          </button>
+        </form>
+
+        <button type="button" class="cancelar" (click)="fecharConfigPopup()">Fechar</button>
       </div>
     </div>
   }

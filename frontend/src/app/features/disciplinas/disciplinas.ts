@@ -9,6 +9,7 @@ import { AvaliacoesService } from '../avaliacoes/avaliacoes.service';
 import { Disciplina } from './disciplina.model';
 import { DisciplinasService } from './disciplinas.service';
 import { atingiuLimiteFaltas, limiteFaltas } from './faltas-limite.util';
+import { ResultadoMedia, calcularMedia } from './media.util';
 
 @Component({
   selector: 'app-disciplinas',
@@ -45,7 +46,7 @@ export class Disciplinas implements OnInit {
 
   readonly avaliacaoForm = this.fb.group({
     titulo: ['', [Validators.required]],
-    tipo: ['PROVA' as 'PROVA' | 'TRABALHO', [Validators.required]],
+    tipo: ['PROVA' as 'PROVA' | 'TRABALHO' | 'RECUPERACAO', [Validators.required]],
     data: ['', [Validators.required]],
     pontuacao: [10, [Validators.required, Validators.min(1)]]
   });
@@ -54,6 +55,15 @@ export class Disciplinas implements OnInit {
   readonly formatarDataBr = formatarDataBr;
   readonly limiteFaltas = limiteFaltas;
   readonly atingiuLimiteFaltas = atingiuLimiteFaltas;
+
+  readonly configPopupAberto = signal(false);
+  readonly configForm = this.fb.group({
+    escalaTotal: [10, [Validators.required, Validators.min(0)]],
+    mediaMinimaPassar: [6, [Validators.required, Validators.min(0)]],
+    mediaMinimaRecuperacao: [3, [Validators.required, Validators.min(0)]]
+  });
+  readonly configErro = signal<string | null>(null);
+  readonly configSalvando = signal(false);
 
   constructor() {
     effect(() => {
@@ -160,6 +170,62 @@ export class Disciplinas implements OnInit {
   removerAvaliacao(avaliacao: Avaliacao): void {
     this.avaliacoesService.remove(avaliacao.id).subscribe(() => {
       this.avaliacoes.update((atual) => atual.filter((a) => a.id !== avaliacao.id));
+    });
+  }
+
+  mediaDaDisciplina(disciplina: Disciplina): ResultadoMedia | null {
+    const periodo = this.periodoContext.periodoAtual();
+    if (!periodo) {
+      return null;
+    }
+    const avaliacoesDaDisciplina = this.avaliacoes().filter((a) => a.disciplinaId === disciplina.id);
+    return calcularMedia(periodo, avaliacoesDaDisciplina);
+  }
+
+  readonly mediaDaDisciplinaSelecionada = computed<ResultadoMedia | null>(() => {
+    const disciplina = this.disciplinaSelecionada();
+    const periodo = this.periodoContext.periodoAtual();
+    if (!disciplina || !periodo) {
+      return null;
+    }
+    return calcularMedia(periodo, this.avaliacoesDaDisciplina());
+  });
+
+  abrirConfigPopup(): void {
+    const periodo = this.periodoContext.periodoAtual();
+    if (!periodo) {
+      return;
+    }
+    this.configErro.set(null);
+    this.configForm.reset({
+      escalaTotal: periodo.escalaTotal,
+      mediaMinimaPassar: periodo.mediaMinimaPassar,
+      mediaMinimaRecuperacao: periodo.mediaMinimaRecuperacao
+    });
+    this.configPopupAberto.set(true);
+  }
+
+  fecharConfigPopup(): void {
+    this.configPopupAberto.set(false);
+  }
+
+  salvarConfig(): void {
+    const periodo = this.periodoContext.periodoAtual();
+    if (this.configForm.invalid || !periodo) {
+      return;
+    }
+    const { escalaTotal, mediaMinimaPassar, mediaMinimaRecuperacao } = this.configForm.getRawValue();
+    this.configErro.set(null);
+    this.configSalvando.set(true);
+    this.periodoContext.atualizarConfig(periodo.id, escalaTotal!, mediaMinimaPassar!, mediaMinimaRecuperacao!).subscribe({
+      next: () => {
+        this.configSalvando.set(false);
+        this.configPopupAberto.set(false);
+      },
+      error: () => {
+        this.configSalvando.set(false);
+        this.configErro.set('Não foi possível salvar. Confira se os valores estão em ordem (recuperação ≤ passar ≤ escala).');
+      }
     });
   }
 }

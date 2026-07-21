@@ -1,4 +1,4 @@
-export type TipoAvaliacao = 'PROVA' | 'TRABALHO';
+export type TipoAvaliacao = 'PROVA' | 'TRABALHO' | 'RECUPERACAO';
 
 export interface Avaliacao {
   id: string;
