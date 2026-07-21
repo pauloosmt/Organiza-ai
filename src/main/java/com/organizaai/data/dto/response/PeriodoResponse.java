@@ -8,9 +8,19 @@ import java.util.UUID;
 public record PeriodoResponse(
         UUID id,
         String nome,
+        double escalaTotal,
+        double mediaMinimaPassar,
+        double mediaMinimaRecuperacao,
         Instant createdAt
 ) {
     public static PeriodoResponse fromEntity(Periodo periodo) {
-        return new PeriodoResponse(periodo.getId(), periodo.getNome(), periodo.getCreatedAt());
+        return new PeriodoResponse(
+                periodo.getId(),
+                periodo.getNome(),
+                periodo.getEscalaTotal(),
+                periodo.getMediaMinimaPassar(),
+                periodo.getMediaMinimaRecuperacao(),
+                periodo.getCreatedAt()
+        );
     }
 }

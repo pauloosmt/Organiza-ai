@@ -1,5 +1,6 @@
 package com.organizaai.controller;
 
+import com.organizaai.data.dto.request.AtualizarConfigPeriodoRequest;
 import com.organizaai.data.dto.request.CreatePeriodoRequest;
 import com.organizaai.data.dto.response.PeriodoResponse;
 import com.organizaai.data.entity.Periodo;
@@ -11,12 +12,15 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.util.List;
+import java.util.UUID;
 
 @RestController
 @RequestMapping("/api/periodos")
@@ -39,5 +43,16 @@ public class PeriodoController {
         return periodoService.list(user.getId()).stream()
                 .map(PeriodoResponse::fromEntity)
                 .toList();
+    }
+
+    @PutMapping("/{id}/config")
+    public ResponseEntity<PeriodoResponse> atualizarConfig(
+            @AuthenticationPrincipal User user,
+            @PathVariable UUID id,
+            @Valid @RequestBody AtualizarConfigPeriodoRequest request
+    ) {
+        Periodo periodo = periodoService.atualizarConfig(
+                user.getId(), id, request.escalaTotal(), request.mediaMinimaPassar(), request.mediaMinimaRecuperacao());
+        return ResponseEntity.ok(PeriodoResponse.fromEntity(periodo));
     }
 }

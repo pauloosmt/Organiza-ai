@@ -2,12 +2,14 @@ package com.organizaai.exceptions.general;
 
 import com.organizaai.exceptions.entity.AvaliacaoNotFoundException;
 import com.organizaai.exceptions.entity.CodigoVerificacaoInvalidoException;
+import com.organizaai.exceptions.entity.ConfigPeriodoInvalidaException;
 import com.organizaai.exceptions.entity.DisciplinaNotFoundException;
 import com.organizaai.exceptions.entity.EmailAlreadyExistsException;
 import com.organizaai.exceptions.entity.FaltasNegativasException;
 import com.organizaai.exceptions.entity.GradeBlocoNotFoundException;
 import com.organizaai.exceptions.entity.HorarioSobrepostoException;
 import com.organizaai.exceptions.entity.PeriodoJaExisteException;
+import com.organizaai.exceptions.entity.PeriodoNotFoundException;
 import com.organizaai.exceptions.entity.SenhaAtualInvalidaException;
 import com.organizaai.exceptions.login.EmailNaoVerificadoException;
 import com.organizaai.exceptions.login.InvalidCredentialsException;
@@ -49,7 +51,12 @@ public class GlobalExceptionHandler {
         return buildResponse(HttpStatus.BAD_REQUEST, ex.getMessage());
     }
 
-    @ExceptionHandler({DisciplinaNotFoundException.class, GradeBlocoNotFoundException.class, AvaliacaoNotFoundException.class})
+    @ExceptionHandler(ConfigPeriodoInvalidaException.class)
+    public ResponseEntity<Map<String, Object>> handleConfigPeriodoInvalida(ConfigPeriodoInvalidaException ex) {
+        return buildResponse(HttpStatus.BAD_REQUEST, ex.getMessage());
+    }
+
+    @ExceptionHandler({DisciplinaNotFoundException.class, GradeBlocoNotFoundException.class, AvaliacaoNotFoundException.class, PeriodoNotFoundException.class})
     public ResponseEntity<Map<String, Object>> handleNotFound(RuntimeException ex) {
         return buildResponse(HttpStatus.NOT_FOUND, ex.getMessage());
     }
