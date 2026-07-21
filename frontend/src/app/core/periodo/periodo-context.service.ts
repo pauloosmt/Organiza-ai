@@ -50,4 +50,17 @@ export class PeriodoContextService {
       })
     );
   }
+
+  atualizarConfig(
+    id: string,
+    escalaTotal: number,
+    mediaMinimaPassar: number,
+    mediaMinimaRecuperacao: number
+  ): Observable<Periodo> {
+    return this.periodoService.atualizarConfig(id, escalaTotal, mediaMinimaPassar, mediaMinimaRecuperacao).pipe(
+      tap((periodo) => {
+        this.periodos.update((atual) => atual.map((p) => (p.id === periodo.id ? periodo : p)));
+      })
+    );
+  }
 }

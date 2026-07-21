@@ -16,4 +16,17 @@ export class PeriodoService {
   create(ano: number, semestre: 1 | 2): Observable<Periodo> {
     return this.http.post<Periodo>(this.baseUrl, { ano, semestre });
   }
+
+  atualizarConfig(
+    id: string,
+    escalaTotal: number,
+    mediaMinimaPassar: number,
+    mediaMinimaRecuperacao: number
+  ): Observable<Periodo> {
+    return this.http.put<Periodo>(`${this.baseUrl}/${id}/config`, {
+      escalaTotal,
+      mediaMinimaPassar,
+      mediaMinimaRecuperacao
+    });
+  }
 }
