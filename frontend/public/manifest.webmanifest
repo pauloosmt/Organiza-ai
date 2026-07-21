@@ -1,0 +1,16 @@
+{
+  "name": "Organiza aí",
+  "short_name": "Organiza aí",
+  "description": "Organize disciplinas, grade, faltas, provas e notas do semestre.",
+  "start_url": "/",
+  "scope": "/",
+  "display": "standalone",
+  "background_color": "#b3131e",
+  "theme_color": "#b3131e",
+  "lang": "pt-BR",
+  "icons": [
+    { "src": "icons/icon-192.png", "sizes": "192x192", "type": "image/png" },
+    { "src": "icons/icon-512.png", "sizes": "512x512", "type": "image/png" },
+    { "src": "icons/icon-maskable-512.png", "sizes": "512x512", "type": "image/png", "purpose": "maskable" }
+  ]
+}
