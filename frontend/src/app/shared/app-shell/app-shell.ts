@@ -6,13 +6,14 @@ import { AuthService } from '../../core/auth/auth.service';
 import { Sidebar } from './sidebar/sidebar';
 import { Topbar } from './topbar/topbar';
 import { PeriodoObrigatorioModal } from '../periodo-obrigatorio-modal/periodo-obrigatorio-modal';
+import { OfflineBanner } from './offline-banner/offline-banner';
 
 const TENTATIVAS_VERIFICACAO_SESSAO = 2;
 const INTERVALO_ENTRE_TENTATIVAS_MS = 2000;
 
 @Component({
   selector: 'app-shell',
-  imports: [RouterOutlet, Sidebar, Topbar, PeriodoObrigatorioModal],
+  imports: [RouterOutlet, Sidebar, Topbar, PeriodoObrigatorioModal, OfflineBanner],
   templateUrl: './app-shell.html',
   styleUrl: './app-shell.scss'
 })
