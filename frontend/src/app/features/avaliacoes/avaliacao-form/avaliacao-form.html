@@ -1,4 +1,4 @@
-<form [formGroup]="form" (ngSubmit)="cadastrar()">
+<form [formGroup]="form" (ngSubmit)="submit()">
   <input type="text" formControlName="titulo" placeholder="Título (ex: Prova 1)" />
   <div class="linha-form">
     <select formControlName="tipo">
@@ -12,5 +12,10 @@
   @if (erro()) {
     <p class="error">{{ erro() }}</p>
   }
-  <button type="submit" [disabled]="form.invalid">Adicionar avaliação</button>
+  <div class="acoes">
+    <button type="submit" [disabled]="form.invalid">{{ avaliacao ? 'Salvar' : 'Adicionar avaliação' }}</button>
+    @if (avaliacao) {
+      <button type="button" class="cancelar" (click)="cancelar()">Cancelar</button>
+    }
+  </div>
 </form>
