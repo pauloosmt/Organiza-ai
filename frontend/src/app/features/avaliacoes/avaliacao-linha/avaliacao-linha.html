@@ -1,32 +1,43 @@
-<div class="avaliacao-info">
-  @if (mostrarDisciplina) {
-    <span class="disciplina-avatar" [style.background]="tagColorVar(avaliacao.corIndice)">{{ avaliacao.disciplinaNome.charAt(0).toUpperCase() }}</span>
-    <span class="disciplina-nome">{{ avaliacao.disciplinaNome }}</span>
+@if (editando()) {
+  <app-avaliacao-form
+    [avaliacao]="avaliacao"
+    (atualizada)="aoSalvarEdicao($event)"
+    (cancelada)="editando.set(false)"
+  />
+} @else {
+  <div class="avaliacao-info">
+    @if (mostrarDisciplina) {
+      <span class="disciplina-avatar" [style.background]="tagColorVar(avaliacao.corIndice)">{{ avaliacao.disciplinaNome.charAt(0).toUpperCase() }}</span>
+      <span class="disciplina-nome">{{ avaliacao.disciplinaNome }}</span>
+    }
+    <span
+      class="tipo"
+      [class.trabalho]="avaliacao.tipo === 'TRABALHO'"
+      [class.recuperacao]="avaliacao.tipo === 'RECUPERACAO'"
+    >{{ avaliacao.tipo === 'PROVA' ? 'Prova' : avaliacao.tipo === 'TRABALHO' ? 'Trabalho' : 'Recuperação' }}</span>
+    <span class="titulo">{{ avaliacao.titulo }}</span>
+    <span class="data">{{ formatarDataBr(avaliacao.data) }}</span>
+    <span class="pontuacao">vale {{ avaliacao.pontuacao }}</span>
+  </div>
+  <div class="avaliacao-nota">
+    <label>
+      Nota
+      <input
+        type="number"
+        step="0.1"
+        min="0"
+        [attr.max]="avaliacao.pontuacao"
+        [value]="avaliacao.nota ?? ''"
+        (change)="atualizarNota($any($event.target).value)"
+        placeholder="—"
+      />
+    </label>
+    <div class="acoes">
+      <button type="button" class="editar" (click)="editando.set(true)">Editar</button>
+      <button type="button" class="remover" (click)="remover()">Remover</button>
+    </div>
+  </div>
+  @if (erro()) {
+    <p class="error">{{ erro() }}</p>
   }
-  <span
-    class="tipo"
-    [class.trabalho]="avaliacao.tipo === 'TRABALHO'"
-    [class.recuperacao]="avaliacao.tipo === 'RECUPERACAO'"
-  >{{ avaliacao.tipo === 'PROVA' ? 'Prova' : avaliacao.tipo === 'TRABALHO' ? 'Trabalho' : 'Recuperação' }}</span>
-  <span class="titulo">{{ avaliacao.titulo }}</span>
-  <span class="data">{{ formatarDataBr(avaliacao.data) }}</span>
-  <span class="pontuacao">vale {{ avaliacao.pontuacao }}</span>
-</div>
-<div class="avaliacao-nota">
-  <label>
-    Nota
-    <input
-      type="number"
-      step="0.1"
-      min="0"
-      [attr.max]="avaliacao.pontuacao"
-      [value]="avaliacao.nota ?? ''"
-      (change)="atualizarNota($any($event.target).value)"
-      placeholder="—"
-    />
-  </label>
-  <button type="button" class="remover" (click)="remover()">Remover</button>
-</div>
-@if (erro()) {
-  <p class="error">{{ erro() }}</p>
 }

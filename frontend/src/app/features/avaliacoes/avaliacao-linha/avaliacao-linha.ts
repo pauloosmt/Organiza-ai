@@ -1,12 +1,13 @@
 import { Component, EventEmitter, Input, Output, inject, signal } from '@angular/core';
 import { tagColorVar } from '../../../core/theme/tag-color';
 import { formatarDataBr } from '../../../core/utils/data-br';
+import { AvaliacaoForm } from '../avaliacao-form/avaliacao-form';
 import { Avaliacao } from '../avaliacao.model';
 import { AvaliacoesService } from '../avaliacoes.service';
 
 @Component({
   selector: 'li[app-avaliacao-linha]',
-  imports: [],
+  imports: [AvaliacaoForm],
   templateUrl: './avaliacao-linha.html',
   styleUrl: './avaliacao-linha.scss'
 })
@@ -20,9 +21,15 @@ export class AvaliacaoLinha {
   @Output() removida = new EventEmitter<Avaliacao>();
 
   readonly erro = signal<string | null>(null);
+  readonly editando = signal(false);
 
   readonly tagColorVar = tagColorVar;
   readonly formatarDataBr = formatarDataBr;
+
+  aoSalvarEdicao(atualizada: Avaliacao): void {
+    this.editando.set(false);
+    this.atualizada.emit(atualizada);
+  }
 
   atualizarNota(notaTexto: string): void {
     const nota = notaTexto.trim() === '' ? null : Number(notaTexto);
