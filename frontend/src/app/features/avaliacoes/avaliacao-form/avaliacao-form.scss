@@ -74,13 +74,13 @@ form {
 }
 
 @media (max-width: 480px) {
-  .linha-form {
+  form .linha-form {
     flex-wrap: wrap;
 
     select,
     app-date-picker-br,
     input[type='number'] {
-      flex-basis: 100%;
+      flex: 1 1 100%;
     }
   }
 }
