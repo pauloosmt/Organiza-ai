@@ -8,6 +8,7 @@
 
 .campo {
   width: 100%;
+  min-width: 0;
   display: flex;
   align-items: center;
   justify-content: space-between;
@@ -33,6 +34,13 @@
   &:disabled {
     opacity: 0.6;
     cursor: not-allowed;
+  }
+
+  span {
+    min-width: 0;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
   }
 
   .placeholder {
