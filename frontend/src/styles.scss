@@ -112,7 +112,10 @@ h1, h2, h3 {
   text-wrap: balance;
 }
 
-button {
+button,
+input,
+select,
+textarea {
   font-family: inherit;
 }
 
