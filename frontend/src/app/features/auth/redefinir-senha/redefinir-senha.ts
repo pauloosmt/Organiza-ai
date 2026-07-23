@@ -3,10 +3,11 @@ import { ReactiveFormsModule, FormBuilder, Validators } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
 import { AuthService } from '../../../core/auth/auth.service';
 import { AuthLayout } from '../../../shared/auth-layout/auth-layout';
+import { PasswordInput } from '../../../shared/password-input/password-input';
 
 @Component({
   selector: 'app-redefinir-senha',
-  imports: [ReactiveFormsModule, AuthLayout],
+  imports: [ReactiveFormsModule, AuthLayout, PasswordInput],
   templateUrl: './redefinir-senha.html',
   styleUrl: '../login/login.scss'
 })

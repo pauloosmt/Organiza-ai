@@ -19,12 +19,12 @@
 
     <div class="field">
       <label for="novaSenha">Nova senha</label>
-      <input id="novaSenha" type="password" formControlName="novaSenha" autocomplete="new-password" placeholder="••••••••" />
+      <app-password-input inputId="novaSenha" formControlName="novaSenha" autocomplete="new-password" placeholder="••••••••" />
     </div>
 
     <div class="field">
       <label for="confirmarSenha">Confirmar nova senha</label>
-      <input id="confirmarSenha" type="password" formControlName="confirmarSenha" autocomplete="new-password" placeholder="••••••••" />
+      <app-password-input inputId="confirmarSenha" formControlName="confirmarSenha" autocomplete="new-password" placeholder="••••••••" />
     </div>
 
     @if (errorMessage()) {

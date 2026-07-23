@@ -4,10 +4,11 @@ import { Router } from '@angular/router';
 import { AuthService } from '../../core/auth/auth.service';
 import { ThemeService } from '../../core/theme/theme.service';
 import { formatarDataBr } from '../../core/utils/data-br';
+import { PasswordInput } from '../../shared/password-input/password-input';
 
 @Component({
   selector: 'app-perfil',
-  imports: [ReactiveFormsModule],
+  imports: [ReactiveFormsModule, PasswordInput],
   templateUrl: './perfil.html',
   styleUrl: './perfil.scss'
 })

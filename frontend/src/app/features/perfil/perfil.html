@@ -32,11 +32,11 @@
         <form [formGroup]="senhaForm" (ngSubmit)="iniciarTrocaSenha()">
           <div class="field">
             <label for="novaSenha">Nova senha</label>
-            <input id="novaSenha" type="password" formControlName="novaSenha" autocomplete="new-password" />
+            <app-password-input inputId="novaSenha" formControlName="novaSenha" autocomplete="new-password" />
           </div>
           <div class="field">
             <label for="confirmarSenha">Confirmar nova senha</label>
-            <input id="confirmarSenha" type="password" formControlName="confirmarSenha" autocomplete="new-password" />
+            <app-password-input inputId="confirmarSenha" formControlName="confirmarSenha" autocomplete="new-password" />
           </div>
           @if (senhaErro()) {
             <p class="error">{{ senhaErro() }}</p>
@@ -115,7 +115,7 @@
         <form [formGroup]="excluirForm" (ngSubmit)="confirmarExclusao()">
           <div class="field">
             <label for="senhaExclusao">Senha</label>
-            <input id="senhaExclusao" type="password" formControlName="senha" autocomplete="current-password" />
+            <app-password-input inputId="senhaExclusao" formControlName="senha" autocomplete="current-password" />
           </div>
           @if (excluirErro()) {
             <p class="error">{{ excluirErro() }}</p>
