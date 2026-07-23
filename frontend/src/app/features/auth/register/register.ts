@@ -3,10 +3,11 @@ import { ReactiveFormsModule, FormBuilder, Validators } from '@angular/forms';
 import { Router, RouterLink } from '@angular/router';
 import { AuthService } from '../../../core/auth/auth.service';
 import { AuthLayout } from '../../../shared/auth-layout/auth-layout';
+import { PasswordInput } from '../../../shared/password-input/password-input';
 
 @Component({
   selector: 'app-register',
-  imports: [ReactiveFormsModule, RouterLink, AuthLayout],
+  imports: [ReactiveFormsModule, RouterLink, AuthLayout, PasswordInput],
   templateUrl: './register.html',
   styleUrl: '../login/login.scss'
 })
@@ -21,7 +22,8 @@ export class Register {
   readonly form = this.fb.group({
     name: ['', [Validators.required]],
     email: ['', [Validators.required, Validators.email]],
-    password: ['', [Validators.required, Validators.minLength(8)]]
+    password: ['', [Validators.required, Validators.minLength(8)]],
+    confirmarSenha: ['', [Validators.required]]
   });
 
   submit(): void {
@@ -29,10 +31,14 @@ export class Register {
       return;
     }
 
+    const { name, email, password, confirmarSenha } = this.form.getRawValue();
+    if (password !== confirmarSenha) {
+      this.errorMessage.set('As senhas não coincidem.');
+      return;
+    }
+
     this.errorMessage.set(null);
     this.submitting.set(true);
-
-    const { name, email, password } = this.form.getRawValue();
 
     this.authService.register(name!, email!, password!).subscribe({
       next: () => {
