@@ -40,6 +40,9 @@ public class GradeBloco {
     @Column(name = "hora_fim", nullable = false)
     private int horaFim;
 
+    @Column(name = "sala", length = 80)
+    private String sala;
+
     @Column(name = "created_at", nullable = false, updatable = false)
     private Instant createdAt;
 

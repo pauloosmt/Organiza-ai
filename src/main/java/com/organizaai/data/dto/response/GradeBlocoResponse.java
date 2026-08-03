@@ -11,7 +11,8 @@ public record GradeBlocoResponse(
         int corIndice,
         int diaSemana,
         int horaInicio,
-        int horaFim
+        int horaFim,
+        String sala
 ) {
     public static GradeBlocoResponse fromEntity(GradeBloco bloco, String disciplinaNome, int corIndice) {
         return new GradeBlocoResponse(
@@ -21,7 +22,8 @@ public record GradeBlocoResponse(
                 corIndice,
                 bloco.getDiaSemana(),
                 bloco.getHoraInicio(),
-                bloco.getHoraFim()
+                bloco.getHoraFim(),
+                bloco.getSala()
         );
     }
 }

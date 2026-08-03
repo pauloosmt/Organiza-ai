@@ -22,7 +22,12 @@
             <li>
               <span class="tick" [style.background]="tagColorVar(bloco.corIndice)"></span>
               <span class="horario">{{ bloco.horaInicio.toString().padStart(2, '0') }}:00</span>
-              <span class="disciplina">{{ bloco.disciplinaNome }}</span>
+              <span class="info">
+                <span class="disciplina">{{ bloco.disciplinaNome }}</span>
+                @if (bloco.sala) {
+                  <span class="sala">Sala {{ bloco.sala }}</span>
+                }
+              </span>
             </li>
           }
         </ul>

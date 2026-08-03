@@ -22,6 +22,7 @@ interface PopupState {
   horaFim: number;
   blocoId: string | null;
   query: string;
+  sala: string;
 }
 
 @Component({
@@ -145,7 +146,7 @@ export class GradeBoard implements OnInit {
     if (this.dragging && this.dragDia !== null && this.dragStart !== null && this.dragEnd !== null) {
       const horaInicio = Math.min(this.dragStart, this.dragEnd);
       const horaFim = Math.max(this.dragStart, this.dragEnd) + 1;
-      this.abrirPopup(this.dragDia, horaInicio, horaFim, null, '');
+      this.abrirPopup(this.dragDia, horaInicio, horaFim, null, '', '');
     }
     this.dragging = false;
     this.dragDia = null;
@@ -165,12 +166,12 @@ export class GradeBoard implements OnInit {
   }
 
   onClickBloco(bloco: GradeBloco): void {
-    this.abrirPopup(bloco.diaSemana, bloco.horaInicio, bloco.horaFim, bloco.id, bloco.disciplinaNome);
+    this.abrirPopup(bloco.diaSemana, bloco.horaInicio, bloco.horaFim, bloco.id, bloco.disciplinaNome, bloco.sala ?? '');
   }
 
-  abrirPopup(dia: number, horaInicio: number, horaFim: number, blocoId: string | null, query: string): void {
+  abrirPopup(dia: number, horaInicio: number, horaFim: number, blocoId: string | null, query: string, sala: string): void {
     this.errorMessage.set(null);
-    this.popup.set({ dia, horaInicio, horaFim, blocoId, query });
+    this.popup.set({ dia, horaInicio, horaFim, blocoId, query, sala });
   }
 
   fecharPopup(): void {
@@ -181,6 +182,13 @@ export class GradeBoard implements OnInit {
     const p = this.popup();
     if (p) {
       this.popup.set({ ...p, query: valor });
+    }
+  }
+
+  atualizarSala(valor: string): void {
+    const p = this.popup();
+    if (p) {
+      this.popup.set({ ...p, sala: valor });
     }
   }
 
@@ -212,7 +220,8 @@ export class GradeBoard implements OnInit {
       disciplinaId,
       diaSemana: p.dia,
       horaInicio: p.horaInicio,
-      horaFim: p.horaFim
+      horaFim: p.horaFim,
+      sala: p.sala.trim() || null
     };
 
     const request$ = p.blocoId ? this.gradeService.update(p.blocoId, payload) : this.gradeService.create(payload);

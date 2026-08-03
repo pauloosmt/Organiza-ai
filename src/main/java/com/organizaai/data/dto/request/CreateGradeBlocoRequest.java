@@ -3,6 +3,7 @@ package com.organizaai.data.dto.request;
 import jakarta.validation.constraints.Max;
 import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.Size;
 
 import java.util.UUID;
 
@@ -24,6 +25,9 @@ public record CreateGradeBlocoRequest(
         @NotNull
         @Min(7)
         @Max(23)
-        Integer horaFim
+        Integer horaFim,
+
+        @Size(max = 80)
+        String sala
 ) {
 }

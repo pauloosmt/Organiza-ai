@@ -191,7 +191,7 @@ class DisciplinaGradeControllerTest {
         return mockMvc.perform(post("/api/grade/blocos").cookie(cookie)
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(objectMapper.writeValueAsString(
-                        new CreateGradeBlocoRequest(disciplinaId, diaSemana, horaInicio, horaFim))));
+                        new CreateGradeBlocoRequest(disciplinaId, diaSemana, horaInicio, horaFim, null))));
     }
 
     private UUID extrairId(MvcResult result) throws Exception {

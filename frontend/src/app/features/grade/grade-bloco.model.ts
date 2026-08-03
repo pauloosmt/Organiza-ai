@@ -6,6 +6,7 @@ export interface GradeBloco {
   diaSemana: number;
   horaInicio: number;
   horaFim: number;
+  sala: string | null;
 }
 
 export interface CreateOuUpdateGradeBlocoPayload {
@@ -13,4 +14,5 @@ export interface CreateOuUpdateGradeBlocoPayload {
   diaSemana: number;
   horaInicio: number;
   horaFim: number;
+  sala: string | null;
 }

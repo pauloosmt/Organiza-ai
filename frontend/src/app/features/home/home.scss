@@ -84,6 +84,17 @@
       color: var(--color-primary);
       min-width: 3.5rem;
     }
+
+    .info {
+      display: flex;
+      flex-direction: column;
+      gap: 0.1rem;
+    }
+
+    .sala {
+      font-size: 0.75rem;
+      color: var(--color-text-muted);
+    }
   }
 
   .vazio {

@@ -46,6 +46,7 @@ public class GradeService {
         assertSemSobreposicao(userId, disciplina.getPeriodoId(), request.diaSemana(), request.horaInicio(), request.horaFim(), null);
 
         GradeBloco bloco = new GradeBloco(userId, disciplina.getId(), request.diaSemana(), request.horaInicio(), request.horaFim());
+        bloco.setSala(normalizarSala(request.sala()));
         return gradeBlocoRepository.save(bloco);
     }
 
@@ -59,6 +60,7 @@ public class GradeService {
         bloco.setDiaSemana(request.diaSemana());
         bloco.setHoraInicio(request.horaInicio());
         bloco.setHoraFim(request.horaFim());
+        bloco.setSala(normalizarSala(request.sala()));
         return gradeBlocoRepository.save(bloco);
     }
 
@@ -76,6 +78,10 @@ public class GradeService {
     private GradeBloco getOwned(UUID userId, UUID blocoId) {
         return gradeBlocoRepository.findByIdAndUserId(blocoId, userId)
                 .orElseThrow(() -> new GradeBlocoNotFoundException(blocoId));
+    }
+
+    private String normalizarSala(String sala) {
+        return sala == null || sala.isBlank() ? null : sala.trim();
     }
 
     private void validarIntervalo(int horaInicio, int horaFim) {
