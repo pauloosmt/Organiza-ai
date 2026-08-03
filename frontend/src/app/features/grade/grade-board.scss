@@ -250,6 +250,8 @@
   .popup-actions {
     display: flex;
     justify-content: space-between;
+    align-items: center;
+    gap: 0.5rem;
     margin-top: 0.5rem;
 
     .remover {
@@ -267,6 +269,16 @@
       padding: 0.4rem 0.9rem;
       cursor: pointer;
       margin-left: auto;
+    }
+
+    .salvar {
+      border: none;
+      background: var(--color-primary);
+      color: var(--color-on-primary);
+      border-radius: var(--radius-sm);
+      padding: 0.4rem 0.9rem;
+      cursor: pointer;
+      font-weight: 600;
     }
   }
 }

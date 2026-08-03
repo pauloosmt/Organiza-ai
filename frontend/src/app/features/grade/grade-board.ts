@@ -21,6 +21,7 @@ interface PopupState {
   horaInicio: number;
   horaFim: number;
   blocoId: string | null;
+  disciplinaIdAtual: string | null;
   query: string;
   sala: string;
 }
@@ -146,7 +147,7 @@ export class GradeBoard implements OnInit {
     if (this.dragging && this.dragDia !== null && this.dragStart !== null && this.dragEnd !== null) {
       const horaInicio = Math.min(this.dragStart, this.dragEnd);
       const horaFim = Math.max(this.dragStart, this.dragEnd) + 1;
-      this.abrirPopup(this.dragDia, horaInicio, horaFim, null, '', '');
+      this.abrirPopup(this.dragDia, horaInicio, horaFim, null, null, '', '');
     }
     this.dragging = false;
     this.dragDia = null;
@@ -166,12 +167,20 @@ export class GradeBoard implements OnInit {
   }
 
   onClickBloco(bloco: GradeBloco): void {
-    this.abrirPopup(bloco.diaSemana, bloco.horaInicio, bloco.horaFim, bloco.id, bloco.disciplinaNome, bloco.sala ?? '');
+    this.abrirPopup(bloco.diaSemana, bloco.horaInicio, bloco.horaFim, bloco.id, bloco.disciplinaId, bloco.disciplinaNome, bloco.sala ?? '');
   }
 
-  abrirPopup(dia: number, horaInicio: number, horaFim: number, blocoId: string | null, query: string, sala: string): void {
+  abrirPopup(
+    dia: number,
+    horaInicio: number,
+    horaFim: number,
+    blocoId: string | null,
+    disciplinaIdAtual: string | null,
+    query: string,
+    sala: string
+  ): void {
     this.errorMessage.set(null);
-    this.popup.set({ dia, horaInicio, horaFim, blocoId, query, sala });
+    this.popup.set({ dia, horaInicio, horaFim, blocoId, disciplinaIdAtual, query, sala });
   }
 
   fecharPopup(): void {
@@ -194,6 +203,21 @@ export class GradeBoard implements OnInit {
 
   selecionarDisciplina(disciplina: Disciplina): void {
     this.salvarBloco(disciplina.id);
+  }
+
+  salvar(): void {
+    const p = this.popup();
+    if (!p) {
+      return;
+    }
+    const termo = p.query.trim().toLowerCase();
+    const disciplinaSelecionada = this.disciplinas().find((d) => d.nome.toLowerCase() === termo);
+    const disciplinaId = disciplinaSelecionada?.id ?? p.disciplinaIdAtual;
+    if (!disciplinaId) {
+      this.errorMessage.set('Selecione uma disciplina da lista.');
+      return;
+    }
+    this.salvarBloco(disciplinaId);
   }
 
   cadastrarECriarBloco(): void {
