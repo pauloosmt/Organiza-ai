@@ -19,7 +19,6 @@ public record UpdateAvaliacaoRequest(
         @NotNull
         LocalDate data,
 
-        @NotNull
         @Positive
         Double pontuacao,
 

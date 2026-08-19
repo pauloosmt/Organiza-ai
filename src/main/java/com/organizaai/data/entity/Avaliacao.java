@@ -45,8 +45,8 @@ public class Avaliacao {
     @Column(nullable = false)
     private LocalDate data;
 
-    @Column(nullable = false)
-    private double pontuacao;
+    @Column
+    private Double pontuacao;
 
     @Column
     private Double nota;
@@ -58,7 +58,7 @@ public class Avaliacao {
     @Column(name = "created_at", nullable = false, updatable = false)
     private Instant createdAt;
 
-    public Avaliacao(UUID userId, UUID disciplinaId, String titulo, TipoAvaliacao tipo, LocalDate data, double pontuacao) {
+    public Avaliacao(UUID userId, UUID disciplinaId, String titulo, TipoAvaliacao tipo, LocalDate data, Double pontuacao) {
         this.userId = userId;
         this.disciplinaId = disciplinaId;
         this.titulo = titulo;

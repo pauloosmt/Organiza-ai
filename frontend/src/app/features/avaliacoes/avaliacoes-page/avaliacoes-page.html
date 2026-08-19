@@ -29,18 +29,29 @@
 
   <section class="lista-avaliacoes">
     <h2>Avaliações do período</h2>
-    @if (avaliacoesOrdenadas().length > 0) {
-      <ul class="avaliacoes-lista">
-        @for (avaliacao of avaliacoesOrdenadas(); track avaliacao.id) {
-          <li
-            app-avaliacao-linha
-            [avaliacao]="avaliacao"
-            [mostrarDisciplina]="true"
-            (atualizada)="aoAtualizarAvaliacao($event)"
-            (removida)="aoRemoverAvaliacao($event)"
-          ></li>
-        }
-      </ul>
+    @if (grupos().length > 0) {
+      @for (grupo of grupos(); track grupo.disciplina.id) {
+        <div class="grupo-disciplina">
+          <button type="button" class="grupo-header" (click)="alternarGrupo(grupo.disciplina.id)">
+            <span class="dot" [style.background]="tagColorVar(grupo.disciplina.corIndice)"></span>
+            <span class="nome">{{ grupo.disciplina.nome }}</span>
+            <span class="contagem">{{ grupo.avaliacoes.length }}</span>
+            <span class="chevron" [class.colapsado]="gruposColapsados().has(grupo.disciplina.id)">▾</span>
+          </button>
+          @if (!gruposColapsados().has(grupo.disciplina.id)) {
+            <ul class="avaliacoes-lista">
+              @for (avaliacao of grupo.avaliacoes; track avaliacao.id) {
+                <li
+                  app-avaliacao-linha
+                  [avaliacao]="avaliacao"
+                  (atualizada)="aoAtualizarAvaliacao($event)"
+                  (removida)="aoRemoverAvaliacao($event)"
+                ></li>
+              }
+            </ul>
+          }
+        </div>
+      }
     } @else {
       <p class="hint">Nenhuma avaliação cadastrada ainda.</p>
     }

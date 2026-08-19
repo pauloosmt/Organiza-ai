@@ -9,7 +9,9 @@ import com.organizaai.exceptions.entity.FaltasNegativasException;
 import com.organizaai.exceptions.entity.GradeBlocoNotFoundException;
 import com.organizaai.exceptions.entity.HorarioSobrepostoException;
 import com.organizaai.exceptions.entity.NotaExcedePontuacaoException;
+import com.organizaai.exceptions.entity.NotaSemPontuacaoException;
 import com.organizaai.exceptions.entity.PeriodoJaExisteException;
+import com.organizaai.exceptions.entity.PontuacaoObrigatoriaException;
 import com.organizaai.exceptions.entity.PeriodoNotFoundException;
 import com.organizaai.exceptions.entity.SenhaAtualInvalidaException;
 import com.organizaai.exceptions.login.EmailNaoVerificadoException;
@@ -59,6 +61,16 @@ public class GlobalExceptionHandler {
 
     @ExceptionHandler(NotaExcedePontuacaoException.class)
     public ResponseEntity<Map<String, Object>> handleNotaExcedePontuacao(NotaExcedePontuacaoException ex) {
+        return buildResponse(HttpStatus.BAD_REQUEST, ex.getMessage());
+    }
+
+    @ExceptionHandler(PontuacaoObrigatoriaException.class)
+    public ResponseEntity<Map<String, Object>> handlePontuacaoObrigatoria(PontuacaoObrigatoriaException ex) {
+        return buildResponse(HttpStatus.BAD_REQUEST, ex.getMessage());
+    }
+
+    @ExceptionHandler(NotaSemPontuacaoException.class)
+    public ResponseEntity<Map<String, Object>> handleNotaSemPontuacao(NotaSemPontuacaoException ex) {
         return buildResponse(HttpStatus.BAD_REQUEST, ex.getMessage());
     }
 

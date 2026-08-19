@@ -14,7 +14,7 @@ public record AvaliacaoResponse(
         String titulo,
         TipoAvaliacao tipo,
         LocalDate data,
-        double pontuacao,
+        Double pontuacao,
         Double nota
 ) {
     public static AvaliacaoResponse fromEntity(Avaliacao avaliacao, String disciplinaNome, int corIndice) {

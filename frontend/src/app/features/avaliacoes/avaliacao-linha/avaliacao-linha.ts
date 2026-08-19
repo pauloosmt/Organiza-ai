@@ -32,6 +32,9 @@ export class AvaliacaoLinha {
   }
 
   atualizarNota(notaTexto: string): void {
+    if (this.avaliacao.pontuacao === null) {
+      return;
+    }
     const nota = notaTexto.trim() === '' ? null : Number(notaTexto);
     if (nota !== null && Number.isNaN(nota)) {
       return;

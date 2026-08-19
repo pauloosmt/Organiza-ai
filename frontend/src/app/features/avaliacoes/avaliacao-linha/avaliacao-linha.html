@@ -14,24 +14,36 @@
       class="tipo"
       [class.trabalho]="avaliacao.tipo === 'TRABALHO'"
       [class.recuperacao]="avaliacao.tipo === 'RECUPERACAO'"
-    >{{ avaliacao.tipo === 'PROVA' ? 'Prova' : avaliacao.tipo === 'TRABALHO' ? 'Trabalho' : 'Recuperação' }}</span>
+      [class.atividade]="avaliacao.tipo === 'ATIVIDADE'"
+    >{{
+      avaliacao.tipo === 'PROVA' ? 'Prova'
+        : avaliacao.tipo === 'TRABALHO' ? 'Trabalho'
+        : avaliacao.tipo === 'RECUPERACAO' ? 'Recuperação'
+        : 'Atividade'
+    }}</span>
     <span class="titulo">{{ avaliacao.titulo }}</span>
     <span class="data">{{ formatarDataBr(avaliacao.data) }}</span>
-    <span class="pontuacao">vale {{ avaliacao.pontuacao }}</span>
+    @if (avaliacao.pontuacao !== null) {
+      <span class="pontuacao">vale {{ avaliacao.pontuacao }}</span>
+    }
   </div>
   <div class="avaliacao-nota">
-    <label>
-      Nota
-      <input
-        type="number"
-        step="0.1"
-        min="0"
-        [attr.max]="avaliacao.pontuacao"
-        [value]="avaliacao.nota ?? ''"
-        (change)="atualizarNota($any($event.target).value)"
-        placeholder="—"
-      />
-    </label>
+    @if (avaliacao.pontuacao !== null) {
+      <label>
+        Nota
+        <input
+          type="number"
+          step="0.1"
+          min="0"
+          [attr.max]="avaliacao.pontuacao"
+          [value]="avaliacao.nota ?? ''"
+          (change)="atualizarNota($any($event.target).value)"
+          placeholder="—"
+        />
+      </label>
+    } @else {
+      <span class="sem-pontuacao">Sem pontuação — não dá pra lançar nota</span>
+    }
     <div class="acoes">
       <button type="button" class="editar" (click)="editando.set(true)">Editar</button>
       <button type="button" class="remover" (click)="remover()">Remover</button>

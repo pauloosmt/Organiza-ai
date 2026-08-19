@@ -22,7 +22,6 @@ public record CreateAvaliacaoRequest(
         @NotNull
         LocalDate data,
 
-        @NotNull
         @Positive
         Double pontuacao
 ) {

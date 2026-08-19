@@ -90,6 +90,71 @@ select {
   gap: 0.6rem;
 }
 
+.grupo-disciplina {
+  display: flex;
+  flex-direction: column;
+  gap: 0.6rem;
+
+  & + .grupo-disciplina {
+    margin-top: 0.5rem;
+    padding-top: 1rem;
+    border-top: 1px solid var(--color-border);
+  }
+
+  .avaliacoes-lista {
+    padding-left: 0.5rem;
+  }
+}
+
+.grupo-header {
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+  padding: 0.3rem 0.4rem;
+  margin: -0.3rem -0.4rem;
+  border: none;
+  border-radius: var(--radius-sm);
+  background: transparent;
+  cursor: pointer;
+  text-align: left;
+  font-family: var(--font-body);
+  width: calc(100% + 0.8rem);
+
+  &:hover:not(:disabled) {
+    background: var(--color-surface-sunken);
+  }
+
+  .dot {
+    width: 10px;
+    height: 10px;
+    border-radius: 50%;
+    flex-shrink: 0;
+  }
+
+  .nome {
+    font-weight: 700;
+    color: var(--color-text);
+  }
+
+  .contagem {
+    font-size: 0.78rem;
+    color: var(--color-text-muted);
+    background: var(--color-surface-sunken);
+    border-radius: 999px;
+    padding: 0.1rem 0.55rem;
+  }
+
+  .chevron {
+    margin-left: auto;
+    color: var(--color-text-muted);
+    transition: transform 0.15s ease;
+
+    &.colapsado {
+      transform: rotate(-90deg);
+    }
+  }
+}
+
 @media (max-width: 560px) {
   .avaliacoes-page {
     padding: 1.5rem 1rem 2.5rem;

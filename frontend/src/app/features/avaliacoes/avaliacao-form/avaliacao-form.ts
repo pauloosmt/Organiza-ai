@@ -1,5 +1,6 @@
 import { Component, EventEmitter, Input, OnInit, Output, inject, signal } from '@angular/core';
 import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { DatePickerBr } from '../../../shared/date-picker-br/date-picker-br';
 import { Avaliacao, TipoAvaliacao } from '../avaliacao.model';
 import { AvaliacoesService } from '../avaliacoes.service';
@@ -22,13 +23,20 @@ export class AvaliacaoForm implements OnInit {
   @Output() cancelada = new EventEmitter<void>();
 
   readonly erro = signal<string | null>(null);
+  readonly tipoAtual = signal<TipoAvaliacao>('PROVA');
 
   readonly form = this.fb.group({
     titulo: ['', [Validators.required]],
     tipo: ['PROVA' as TipoAvaliacao, [Validators.required]],
     data: ['', [Validators.required]],
-    pontuacao: [10, [Validators.required, Validators.min(1)]]
+    pontuacao: [10 as number | null, [Validators.required, Validators.min(1)]]
   });
+
+  constructor() {
+    this.form.get('tipo')!.valueChanges.pipe(takeUntilDestroyed()).subscribe((tipo) => {
+      this.atualizarValidatorPontuacao(tipo as TipoAvaliacao);
+    });
+  }
 
   ngOnInit(): void {
     if (this.avaliacao) {
@@ -56,6 +64,13 @@ export class AvaliacaoForm implements OnInit {
     this.cancelada.emit();
   }
 
+  private atualizarValidatorPontuacao(tipo: TipoAvaliacao): void {
+    this.tipoAtual.set(tipo);
+    const pontuacaoControl = this.form.get('pontuacao')!;
+    pontuacaoControl.setValidators(tipo === 'ATIVIDADE' ? [Validators.min(1)] : [Validators.required, Validators.min(1)]);
+    pontuacaoControl.updateValueAndValidity();
+  }
+
   private cadastrar(): void {
     const valores = this.form.getRawValue();
     this.avaliacoesService.create({
@@ -63,7 +78,7 @@ export class AvaliacaoForm implements OnInit {
       titulo: valores.titulo!,
       tipo: valores.tipo!,
       data: valores.data!,
-      pontuacao: valores.pontuacao!
+      pontuacao: valores.pontuacao ?? null
     }).subscribe({
       next: (avaliacao) => {
         this.criada.emit(avaliacao);
@@ -75,7 +90,7 @@ export class AvaliacaoForm implements OnInit {
 
   private salvarEdicao(avaliacaoAtual: Avaliacao): void {
     const valores = this.form.getRawValue();
-    if (avaliacaoAtual.nota !== null && valores.pontuacao! < avaliacaoAtual.nota) {
+    if (avaliacaoAtual.nota !== null && valores.pontuacao !== null && valores.pontuacao < avaliacaoAtual.nota) {
       this.erro.set(`A pontuação não pode ser menor que a nota já lançada (${avaliacaoAtual.nota}).`);
       return;
     }
@@ -84,7 +99,7 @@ export class AvaliacaoForm implements OnInit {
       titulo: valores.titulo!,
       tipo: valores.tipo!,
       data: valores.data!,
-      pontuacao: valores.pontuacao!,
+      pontuacao: valores.pontuacao ?? null,
       nota: avaliacaoAtual.nota
     }).subscribe({
       next: (atualizada) => this.atualizada.emit(atualizada),

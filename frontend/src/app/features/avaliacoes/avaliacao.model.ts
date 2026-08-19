@@ -1,4 +1,4 @@
-export type TipoAvaliacao = 'PROVA' | 'TRABALHO' | 'RECUPERACAO';
+export type TipoAvaliacao = 'PROVA' | 'TRABALHO' | 'RECUPERACAO' | 'ATIVIDADE';
 
 export interface Avaliacao {
   id: string;
@@ -8,7 +8,7 @@ export interface Avaliacao {
   titulo: string;
   tipo: TipoAvaliacao;
   data: string;
-  pontuacao: number;
+  pontuacao: number | null;
   nota: number | null;
 }
 
@@ -17,13 +17,13 @@ export interface CreateAvaliacaoPayload {
   titulo: string;
   tipo: TipoAvaliacao;
   data: string;
-  pontuacao: number;
+  pontuacao: number | null;
 }
 
 export interface UpdateAvaliacaoPayload {
   titulo: string;
   tipo: TipoAvaliacao;
   data: string;
-  pontuacao: number;
+  pontuacao: number | null;
   nota: number | null;
 }

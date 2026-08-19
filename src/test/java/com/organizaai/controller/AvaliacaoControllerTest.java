@@ -128,6 +128,54 @@ class AvaliacaoControllerTest {
     }
 
     @Test
+    void criaAtividadeSemPontuacao() throws Exception {
+        Cookie cookie = registerAndLogin("bianca@example.com");
+        UUID periodoId = criarPeriodo(cookie, 2030, 1);
+        UUID disciplinaId = criarDisciplina(cookie, periodoId, "Introdução à Programação");
+
+        mockMvc.perform(post("/api/avaliacoes").cookie(cookie)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(
+                                new CreateAvaliacaoRequest(disciplinaId, "Lista 1", TipoAvaliacao.ATIVIDADE, LocalDate.now().plusDays(5), null))))
+                .andExpect(status().isCreated())
+                .andExpect(jsonPath("$.pontuacao").doesNotExist());
+    }
+
+    @Test
+    void naoPermiteProvaSemPontuacao() throws Exception {
+        Cookie cookie = registerAndLogin("caio@example.com");
+        UUID periodoId = criarPeriodo(cookie, 2030, 1);
+        UUID disciplinaId = criarDisciplina(cookie, periodoId, "Redes de Computadores");
+
+        mockMvc.perform(post("/api/avaliacoes").cookie(cookie)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(
+                                new CreateAvaliacaoRequest(disciplinaId, "Prova 1", TipoAvaliacao.PROVA, LocalDate.now().plusDays(5), null))))
+                .andExpect(status().isBadRequest());
+    }
+
+    @Test
+    void naoPermiteLancarNotaEmAtividadeSemPontuacao() throws Exception {
+        Cookie cookie = registerAndLogin("daniel@example.com");
+        UUID periodoId = criarPeriodo(cookie, 2030, 1);
+        UUID disciplinaId = criarDisciplina(cookie, periodoId, "Estrutura de Dados");
+
+        MvcResult creation = mockMvc.perform(post("/api/avaliacoes").cookie(cookie)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(
+                                new CreateAvaliacaoRequest(disciplinaId, "Seminário", TipoAvaliacao.ATIVIDADE, LocalDate.now().plusDays(5), null))))
+                .andExpect(status().isCreated())
+                .andReturn();
+        UUID avaliacaoId = extrairId(creation);
+
+        mockMvc.perform(patch("/api/avaliacoes/" + avaliacaoId).cookie(cookie)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(
+                                new UpdateAvaliacaoRequest("Seminário", TipoAvaliacao.ATIVIDADE, LocalDate.now().plusDays(5), null, 8.0))))
+                .andExpect(status().isBadRequest());
+    }
+
+    @Test
     void removerDisciplinaRemoveAvaliacoesDela() throws Exception {
         Cookie cookie = registerAndLogin("sabrina@example.com");
         UUID periodoId = criarPeriodo(cookie, 2030, 1);
