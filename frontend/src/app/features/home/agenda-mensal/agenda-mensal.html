@@ -13,7 +13,12 @@
           <ul class="itens">
             @for (avaliacao of dia.avaliacoes; track avaliacao.id) {
               <li class="item" [style.background]="tagColorVar(avaliacao.corIndice)">
-                <span class="tipo">{{ avaliacao.tipo === 'PROVA' ? 'Prova' : 'Trabalho' }}</span>
+                <span class="tipo">{{
+                  avaliacao.tipo === 'PROVA' ? 'Prova'
+                    : avaliacao.tipo === 'TRABALHO' ? 'Trabalho'
+                    : avaliacao.tipo === 'RECUPERACAO' ? 'Recuperação'
+                    : 'Atividade'
+                }}</span>
                 <span class="disciplina">{{ avaliacao.disciplinaNome }}</span>
                 <span class="titulo">{{ avaliacao.titulo }}</span>
                 @if (avaliacao.nota !== null) {
