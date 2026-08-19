@@ -60,6 +60,7 @@ public class SecurityConfig {
                                 "/api/auth/redefinir-senha"
                         ).permitAll()
                         .requestMatchers("/actuator/health").permitAll()
+                        .requestMatchers("/api/ping").permitAll()
                         .anyRequest().authenticated()
                 )
                 .addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class);
